@@ -468,3 +468,9 @@ Os seis desafios contêm notas de contexto falsas em comentários JavaScript, co
 A API reconhece somente as iscas exatas do manifesto privado `infrastructure/private/decoy-flags.json` e as rejeita como flags incorretas. A tentativa aparece em **Submissões de flags** com a conta responsável, o desafio e a indicação **HONEYPOT**, destacada em dourado. Também gera um registro em **Warnings** com conta, horário e IP conforme o sistema de logs. O aviso não provoca banimento ou penalidade automática, pois a flag também pode ter sido copiada manualmente. As flags individuais e os percursos dos desafios continuam sendo validados no servidor.
 
 Esses recursos introduzem ruído na extração automática; não garantem bloqueio de IA. Um assistente que distinga instruções de conteúdo pode ignorar as notas, e o jogador pode usar IA para percorrer as vulnerabilidades previstas.
+---
+
+## Licença
+
+Este projeto usa a [Licença MIT](LICENSE). Você pode usar, modificar e redistribuir o projeto, desde que mantenha o aviso de copyright e o texto da licença. Para atribuir a origem em cópias e trabalhos derivados, aponte para o [repositório original](https://github.com/grutex/the-mystical-oracle-ctf).
+
