@@ -1,0 +1,304 @@
+/* ==========================================================================
+   PORTÃO DO AR — Mystical Oracle CTF
+   Elemento: Ar (ciano etéreo / correntes de vento)
+   Segue o design system do portal (Cinzel / Cormorant / fundo estelar)
+   ========================================================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg-dark: #04070a;
+    --air: #06b6d4;            /* cor do elemento Ar (da landing dos desafios) */
+    --air-light: #67e8f9;
+    --air-deep: #0e7490;
+    --air-glow: rgba(6, 182, 212, 0.45);
+    --gold: #d4af37;
+    --gold-light: #fef08a;
+    --green: #10b981;
+    --glass-bg: rgba(8, 16, 22, 0.82);
+    --glass-border: rgba(6, 182, 212, 0.28);
+    --text: #dff6fb;
+    --text-dim: #8bb8c4;
+
+    --font-serif: 'Cinzel', serif;
+    --font-title: 'Cinzel Decorative', cursive;
+    --font-body: 'Cormorant Garamond', serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    position: relative;
+    padding: 40px 16px;
+}
+
+/* ==========================================================================
+   FUNDO AÉREO — correntes de vento, estrelas e brilho ciano
+   ========================================================================== */
+.air-currents {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(55% 50% at 50% 30%, rgba(14, 116, 144, 0.30) 0%, transparent 68%),
+        radial-gradient(45% 40% at 15% 70%, rgba(6, 182, 212, 0.14) 0%, transparent 70%),
+        radial-gradient(45% 40% at 85% 24%, rgba(103, 232, 249, 0.10) 0%, transparent 72%);
+    filter: blur(30px);
+    animation: currentDrift 14s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes currentDrift {
+    0%   { transform: translateX(0) scale(1);       opacity: 0.85; }
+    100% { transform: translateX(22px) scale(1.05); opacity: 1;    }
+}
+
+.stars-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background-image:
+        radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, rgba(103, 232, 249, 0.85), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, var(--air), rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 160px 120px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0.32;
+    animation: starsPulse 8s infinite alternate ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes starsPulse {
+    0%   { opacity: 0.22; transform: scale(1); }
+    100% { opacity: 0.46; transform: scale(1.03); }
+}
+
+.wind-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   CARTÃO DO PORTÃO
+   ========================================================================== */
+.gate-wrapper { position: relative; z-index: 10; width: 100%; max-width: 620px; }
+
+.gate-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 46px 40px 34px;
+    text-align: center;
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.88),
+        inset 0 0 28px rgba(6, 182, 212, 0.08),
+        0 0 38px rgba(6, 182, 212, 0.14);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.gate-card:hover {
+    border-color: rgba(6, 182, 212, 0.5);
+    box-shadow:
+        0 25px 65px rgba(0, 0, 0, 0.95),
+        inset 0 0 34px rgba(6, 182, 212, 0.16),
+        0 0 52px rgba(6, 182, 212, 0.24);
+}
+
+/* ---- Cabeçalho ---- */
+.gate-header { margin-bottom: 22px; }
+
+.gate-eyebrow {
+    display: inline-block;
+    font-family: var(--font-serif);
+    font-size: 0.72rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.85;
+    margin-bottom: 18px;
+}
+
+.air-sigil {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 16px;
+    color: var(--air-light);
+    filter: drop-shadow(0 0 12px var(--air-glow));
+    animation: sigilFloat 6s ease-in-out infinite, sigilSpin 55s linear infinite;
+}
+
+@keyframes sigilFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+}
+@keyframes sigilSpin {
+    from { rotate: 0deg; }
+    to   { rotate: 360deg; }
+}
+
+.gate-title {
+    font-family: var(--font-title);
+    font-size: clamp(1.9rem, 5vw, 2.7rem);
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(180deg, var(--air-light), var(--air) 55%, var(--air-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px var(--air-glow);
+    margin-bottom: 6px;
+}
+
+.gate-subtitle {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+.gate-divider {
+    color: var(--gold);
+    letter-spacing: 4px;
+    opacity: 0.7;
+    margin: 18px 0 24px;
+    font-size: 0.95rem;
+}
+
+/* ---- Fala do Oráculo ---- */
+.oracle-speech { text-align: left; margin: 0 auto 28px; max-width: 480px; }
+
+.speech-line {
+    font-size: 1.18rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 14px;
+}
+.speech-line em { color: var(--air-light); font-style: italic; }
+.speech-line strong { color: var(--gold-light); font-weight: 600; }
+
+.speech-line.whisper {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-dim);
+    margin-top: 20px;
+    font-size: 1.25rem;
+    opacity: 0.9;
+    text-shadow: 0 0 18px var(--air-glow);
+}
+
+/* ---- Orbes de dica ---- */
+.hint-orbs { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-bottom: 30px; }
+
+.hint-orb {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 16px;
+    background: rgba(6, 182, 212, 0.08);
+    border: 1px solid rgba(6, 182, 212, 0.22);
+    border-radius: 999px;
+    font-family: var(--font-serif);
+    font-size: 0.78rem;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    transition: transform 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+.hint-orb:hover { transform: translateY(-3px); border-color: var(--air); color: var(--air-light); }
+.orb-icon { font-size: 1rem; }
+
+/* ---- Botão principal ---- */
+.listen-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 34px;
+    text-decoration: none;
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #eafcff;
+    cursor: pointer;
+    border: 1px solid rgba(6, 182, 212, 0.5);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(14, 116, 144, 0.55), rgba(6, 182, 212, 0.35));
+    box-shadow: 0 0 24px rgba(6, 182, 212, 0.25), inset 0 0 16px rgba(6, 182, 212, 0.15);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.listen-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--air-light);
+    box-shadow: 0 0 38px rgba(6, 182, 212, 0.5), inset 0 0 22px rgba(6, 182, 212, 0.25);
+}
+.listen-btn:active { transform: translateY(0); }
+
+.btn-symbol { font-size: 1.15rem; color: var(--gold-light); animation: sigilFloat 4s ease-in-out infinite; }
+
+/* ---- Rodapé ---- */
+.gate-footer { margin-top: 30px; padding-top: 18px; border-top: 1px solid rgba(6, 182, 212, 0.14); }
+
+.footer-mark {
+    font-family: var(--font-serif);
+    font-size: 0.68rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    opacity: 0.7;
+}
+
+/* ==========================================================================
+   BARRA DE TRAVESSIA (navegação entre telas)
+   ========================================================================== */
+.travessia { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+
+.trav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    text-decoration: none;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    background: rgba(8, 16, 22, 0.7);
+    border: 1px solid rgba(6, 182, 212, 0.22);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+.trav-btn:hover {
+    transform: translateY(-2px);
+    color: var(--air-light);
+    border-color: var(--air);
+    box-shadow: 0 0 22px rgba(6, 182, 212, 0.28);
+}
+
+.trav-glyph { font-size: 1.15rem; color: var(--gold-light); line-height: 1; }
+.trav-label { display: flex; flex-direction: column; line-height: 1.15; font-size: 0.82rem; letter-spacing: 1px; text-transform: uppercase; }
+.trav-label small { font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; opacity: 0.65; }
+
+/* ==========================================================================
+   RESPONSIVO
+   ========================================================================== */
+@media (max-width: 520px) {
+    .gate-card { padding: 34px 22px 26px; }
+    .speech-line { font-size: 1.05rem; }
+    .hint-orbs { gap: 10px; }
+    .listen-btn { width: 100%; }
+    .travessia { gap: 8px; }
+    .trav-btn { padding: 8px 14px; }
+}

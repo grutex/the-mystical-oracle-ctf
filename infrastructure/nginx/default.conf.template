@@ -1,0 +1,114 @@
+# O protocolo público é configuração do servidor, não um cabeçalho do visitante.
+# Cloudflare Tunnel entrega HTTP local mesmo quando a entrada pública usa HTTPS.
+map "${PUBLIC_SCHEME}" $oracle_domain_scheme {
+    default $scheme;
+    http http;
+    https https;
+}
+
+map $host $oracle_public_scheme {
+    default $oracle_domain_scheme;
+    localhost http;
+    ~\.localhost$ http;
+}
+
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $oracle_public_scheme;
+
+server {
+    listen 80 default_server;
+    server_name _;
+    return 444;
+}
+
+server {
+    listen 80;
+    server_name ${PORTAL_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = / { return 302 $oracle_public_scheme://$http_host/login; }
+    location = /ctf-status { proxy_pass http://portal-web/api/api.php?action=status; }
+
+    location = /oracle-runtime.js {
+        alias /etc/nginx/conf.d/oracle-runtime.js;
+        add_header Cache-Control "no-store";
+    }
+
+    location / {
+        proxy_pass http://portal-web;
+    }
+}
+
+server {
+    listen 80;
+    server_name ${MAP_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = /ctf-status { proxy_pass http://portal-web/api/api.php?action=status; }
+    root /srv/challenges/landing;
+    index oracle_chall_landing.html;
+
+    location = /oracle-runtime.js {
+        alias /etc/nginx/conf.d/oracle-runtime.js;
+        add_header Cache-Control "no-store";
+    }
+
+    location = /challenges { return 302 /; }
+    location / { try_files $uri $uri/ =404; }
+}
+
+server {
+    listen 80;
+    server_name ${SPIRIT_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = /oracle-runtime.js { alias /etc/nginx/conf.d/oracle-runtime.js; add_header Cache-Control "no-store"; }
+    location / { proxy_pass http://spirit-web; }
+}
+
+server {
+    listen 80;
+    server_name ${AIR_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = /oracle-runtime.js { alias /etc/nginx/conf.d/oracle-runtime.js; add_header Cache-Control "no-store"; }
+    location / { proxy_pass http://air-web; }
+}
+
+server {
+    listen 80;
+    server_name ${FIRE_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = /oracle-runtime.js { alias /etc/nginx/conf.d/oracle-runtime.js; add_header Cache-Control "no-store"; }
+    location / { proxy_pass http://fire-web; }
+}
+
+server {
+    listen 80;
+    server_name ${WATER_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = /oracle-runtime.js { alias /etc/nginx/conf.d/oracle-runtime.js; add_header Cache-Control "no-store"; }
+    location / { proxy_pass http://water-web; }
+}
+
+server {
+    listen 80;
+    server_name ${EARTH_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = /oracle-runtime.js { alias /etc/nginx/conf.d/oracle-runtime.js; add_header Cache-Control "no-store"; }
+    location / { proxy_pass http://earth-web; }
+}
+
+server {
+    listen 80;
+    server_name ${DEPTH_WATER_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = /oracle-runtime.js { alias /etc/nginx/conf.d/oracle-runtime.js; add_header Cache-Control "no-store"; }
+    location / { proxy_pass http://water-depth-web; }
+}
+
+server {
+    listen 80;
+    server_name ${LIGHT_DARK_HOSTS};
+    include /etc/nginx/oracle-favicon.conf;
+    location = /oracle-runtime.js { alias /etc/nginx/conf.d/oracle-runtime.js; add_header Cache-Control "no-store"; }
+    location / { proxy_pass http://light-dark-web; }
+}

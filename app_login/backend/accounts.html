@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contas · Oráculo Abissal</title>
+    <link rel="stylesheet" href="/accounts/accounts.css?v=reset-application-1">
+</head>
+<body>
+    <header><a href="/oracle">← ORÁCULO</a> <a href="/logs">LOGS DO SISTEMA</a></header>
+    <main>
+        <section class="panel" aria-labelledby="accounts-title">
+            <p class="eyebrow">ADMINISTRAÇÃO DO CTF</p>
+            <h1 id="accounts-title">Registro dos Buscadores</h1>
+            <p>Marque <strong>Transformar conta em teste</strong> para ignorar a conta no leaderboard e permitir seu acesso antes do início e durante pausas. Desmarque para voltar a participar como jogador.</p>
+            <p>As alterações só são aplicadas ao confirmar. As permissões de administrador são preservadas.</p>
+            <form id="accounts-form">
+                <div class="table-wrapper">
+                    <table>
+                        <thead><tr><th>Username</th><th>Nome</th><th>E-mail</th><th>Permissão</th><th>Transformar conta em teste</th><th>Acesso</th></tr></thead>
+                        <tbody id="accounts-list"></tbody>
+                    </table>
+                </div>
+                <div class="actions"><button id="confirm-accounts" type="submit" disabled>CONFIRMAR ALTERAÇÕES</button></div>
+                <p id="accounts-status" role="status" aria-live="polite">Carregando contas...</p>
+            </form>
+        </section>
+        <section class="panel reset-panel" aria-labelledby="reset-title">
+            <p class="eyebrow">PREPARAÇÃO PARA NOVA RODADA</p>
+            <h2 id="reset-title">Resetar o CTF</h2>
+            <p>Apaga todas as contas, exceto Admin, Gandalf e TheFFZ, e limpa progresso, tentativas de flags, logs antigos, avisos, sussurros, snapshots, dados auxiliares dos desafios e o cronômetro. As configurações dos desafios e as três credenciais preservadas permanecem.</p>
+            <button id="reset-application" class="danger-button" type="button">RESETAR PARA UMA NOVA RODADA</button>
+        </section>
+    </main>
+    <script src="/oracle-runtime.js"></script>
+    <script src="/portal-api.js"></script>
+    <script src="/accounts/accounts.js?v=reset-application-1"></script>
+</body>
+</html>

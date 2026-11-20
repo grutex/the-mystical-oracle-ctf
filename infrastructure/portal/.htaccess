@@ -1,0 +1,15 @@
+RewriteEngine On
+DirectorySlash Off
+
+RewriteCond %{THE_REQUEST} \s/+(?:login/oracle[_-]login\.html|login/)(?:[?\s]) [NC]
+RewriteRule ^(?:login/oracle[_-]login\.html|login/)$ /login [R=301,L]
+RewriteRule ^login$ login/oracle_login.html [L]
+
+# URL canônica da tela principal do portal.
+RewriteCond %{THE_REQUEST} \s/+(?:landing/)?oracle-landing\.html(?:[?\s]) [NC]
+RewriteRule ^(?:landing/)?oracle-landing\.html$ /oracle [R=301,L]
+RewriteRule ^oracle/?$ landing/oracle-landing.html [L]
+
+# O HTML da listagem fica fora da raiz pública e só é servido após autorização.
+RewriteRule ^accounts/?$ api/api.php?action=accounts_page [L]
+RewriteRule ^logs/?$ api/api.php?action=logs_page [L]

@@ -1,0 +1,166 @@
+window.ORACLE_CONFIG = (() => {
+    const local = location.hostname === 'localhost' || location.hostname.endsWith('.localhost');
+    return Object.freeze({
+        portalHost: local ? 'localhost' : "${PORTAL_HOST}",
+        mapHost: local ? 'mapa.localhost' : "${MAP_HOST}",
+        challengeHost: local ? 'localhost' : "${CHALLENGE_HOST}"
+    });
+})();
+
+// The gateway serves the same transparent icon on every public host.
+if (document.head) {
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.type = 'image/png';
+    favicon.sizes = '48x48';
+    favicon.href = '/favicon.png?v=mystic-eye-1';
+    document.head.appendChild(favicon);
+}
+
+// Relógio comum a todas as origens; o servidor é a autoridade sobre a pausa.
+(() => {
+    const portal = location.protocol + '//' + window.ORACLE_CONFIG.portalHost
+        + (location.port ? ':' + location.port : '');
+    let state = null;
+    let receivedAt = 0;
+    let badge;
+    let polling = false;
+    const render = () => {
+        if (!badge || !state) return;
+        const seconds = Math.max(0, Math.floor(state.elapsed_seconds
+            + (state.started_at && !state.paused_at && !state.closed_at ? (Date.now() - receivedAt) / 1000 : 0)));
+        const hours = Math.floor(seconds / 3600);
+        const time = String(hours).padStart(2, '0') + ':'
+            + String(Math.floor(seconds % 3600 / 60)).padStart(2, '0') + ':'
+            + String(seconds % 60).padStart(2, '0');
+        badge.textContent = (state.closed_at ? 'CTF encerrado · ' : state.paused_at ? 'CTF pausado · '
+            : state.started_at ? 'CTF · ' : 'CTF aguardando · ') + time;
+    };
+    const poll = async () => {
+        if (polling || document.hidden) return;
+        polling = true;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000);
+        try {
+            const challengePage = location.hostname !== window.ORACLE_CONFIG.portalHost
+                && location.hostname !== window.ORACLE_CONFIG.mapHost;
+            let statusUrl = challengePage ? '/contest-status.php' : '/ctf-status';
+            if (!challengePage && /^\/oracle\/?$/.test(location.pathname) && window.OracleWhispers?.ready) {
+                const markers = window.OracleWhispers.markers;
+                statusUrl = '/api/api.php?action=status&' + new URLSearchParams(markers);
+            }
+            const response = await fetch(statusUrl, {
+                credentials: 'include', cache: 'no-store', signal: controller.signal
+            });
+            if (!response.ok) return;
+            const result = await response.json();
+            state = result.contest;
+            receivedAt = Date.now();
+            render();
+            if (result.whispers) document.dispatchEvent(new CustomEvent('oracle:whispers', {detail: result.whispers}));
+            document.querySelectorAll('[data-admin-help]').forEach(button => { button.hidden = !result.is_admin; });
+            const publicPage = location.hostname === window.ORACLE_CONFIG.mapHost
+                || (/^\/(?:login(?:\/.*)?|)$/.test(location.pathname)
+                    && location.hostname === window.ORACLE_CONFIG.portalHost);
+            const botPage = /\/(?:consulta|revisar)\.php$/.test(location.pathname);
+            if (!publicPage && !botPage && result.progress_reset) {
+                try { sessionStorage.removeItem('arq_auth'); } catch (_) {}
+                location.replace(portal + '/oracle');
+                return;
+            }
+            if (!publicPage && !botPage && (result.session_lost || !result.authenticated)) {
+                location.replace(portal + '/login');
+            }
+        } catch (_) { /* Uma falha de rede não encerra a sessão. */ }
+        finally { clearTimeout(timeout); polling = false; }
+    };
+    const mount = () => {
+        badge = document.createElement('div');
+        badge.id = 'oracle-ctf-timer';
+        badge.setAttribute('role', 'timer');
+        badge.setAttribute('aria-label', 'Tempo ativo do CTF');
+        badge.style.cssText = 'position:fixed;top:12px;right:12px;z-index:2147483647;'
+            + 'padding:9px 13px;border:1px solid #a78bfa;border-radius:10px;background:#100b1ff2;'
+            + 'color:#f5f0ff;font:600 13px monospace;box-shadow:0 4px 18px #0008;pointer-events:none;';
+        if (location.hostname === window.ORACLE_CONFIG.portalHost
+            && /^\/(?:oracle\/?|leaderboard(?:\/leaderboard\.html|\/)?)$/.test(location.pathname)) {
+            badge.style.top = '80px';
+        }
+        badge.textContent = 'CTF · sincronizando';
+        document.body.appendChild(badge);
+        const helpButtons = document.querySelectorAll('[data-admin-help]');
+        if (helpButtons.length) {
+            const help = document.createElement('dialog');
+            help.id = 'oracle-leaderboard-help';
+            help.setAttribute('aria-labelledby', 'oracle-admin-help-title');
+            const helpStyle = document.createElement('style');
+            helpStyle.textContent = `
+                #oracle-leaderboard-help { box-sizing:border-box;margin:auto;width:min(448px,calc(100vw - 32px));max-height:80vh;
+                    overflow:auto;padding:24px;border:1px solid rgba(157,78,221,.35);border-radius:12px;
+                    background:rgba(11,8,20,.85);color:#e9d5ff;text-align:center;backdrop-filter:blur(16px);
+                    box-shadow:0 8px 32px rgba(0,0,0,.85),inset 0 0 15px rgba(157,78,221,.1);
+                    transition:border-color .35s,box-shadow .35s; }
+                #oracle-leaderboard-help:hover { border-color:rgba(0,243,255,.85);
+                    box-shadow:0 12px 40px rgba(157,78,221,.5),0 0 25px rgba(0,243,255,.4),inset 0 0 20px rgba(0,243,255,.2); }
+                #oracle-leaderboard-help::backdrop { background:rgba(0,0,0,.8);backdrop-filter:blur(12px); }
+                #oracle-leaderboard-help h2 { font:700 18px/1.5 Cinzel,serif;color:#ffd700;margin:0 0 8px; }
+                #oracle-leaderboard-help .help-copy { font:400 14px/1.625 'Cormorant Garamond',serif;text-align:left;margin-bottom:16px; }
+                #oracle-leaderboard-help .help-copy p { margin:0 0 8px; }
+                #oracle-leaderboard-help .help-dismiss { padding:8px 24px;border-radius:9999px;background:#581c87;
+                    color:#e9d5ff;border:1px solid rgba(168,85,247,.4);font:400 12px Cinzel,serif;cursor:pointer; }
+                #oracle-leaderboard-help .help-dismiss:hover { color:white; }
+                #oracle-leaderboard-help .help-cross { position:absolute;top:12px;right:12px;border:0;background:none;
+                    color:#c084fc;font:16px sans-serif;cursor:pointer; }
+                #oracle-leaderboard-help .help-cross:hover { color:white; }
+            `;
+            document.head.appendChild(helpStyle);
+            const commands = [
+                ['Iniciar CTF', 'Abre o jogo para os jogadores e inicia o contador. Administradores e contas de teste podem entrar antes do início.'],
+                ['Pausar CTF', 'Congela o contador, encerra o acesso dos jogadores e bloqueia seus logins e flags. Administradores e contas de teste continuam acessando.'],
+                ['Retomar CTF', 'Continua o contador do ponto da pausa. Os jogadores precisam entrar novamente. Se houver encerramento agendado, ele é adiado pelo tempo da pausa.'],
+                ['Resetar CTF', 'Zera as flags resolvidas e os pontos de todas as contas, o contador, a pausa e o encerramento agendado. Preserva contas, tentativas e histórico de classificação. Jogadores precisam aguardar um novo início e entrar novamente.'],
+                ['Tirar print / salvar', 'Salva uma cópia completa da classificação atual no histórico e baixa um PNG. Os filtros da tabela não limitam esse registro.'],
+                ['Encerrar CTF e salvar', 'Bloqueia novas submissões e preserva a classificação final. Para iniciar outra rodada, use Resetar CTF.'],
+                ['Salvar horário', 'Agenda o encerramento automático no horário informado. O horário aparece no fuso do seu navegador.'],
+                ['Histórico', 'Permite consultar a classificação atual ou um registro salvo de uma rodada anterior.'],
+                ['Baixar print (PNG) / Baixar CSV', 'Exporta todas as linhas do registro selecionado, independentemente da busca ou ordenação visual.'],
+                ['Busca, campo e ordem', 'Filtram e ordenam a visualização da tabela. Não alteram a colocação oficial nem a pontuação.'],
+                ['Oráculo', 'Volta à tela principal do portal.'],
+                ['SOM', 'Liga ou desliga o áudio nesta tela. Não interfere no jogo ou no contador.']
+            ];
+            const title = document.createElement('h2');
+            title.id = 'oracle-admin-help-title';
+            title.textContent = 'Instruções da Leaderboard';
+            help.appendChild(title);
+            const cross = document.createElement('button');
+            cross.className = 'help-cross';
+            cross.textContent = '✕';
+            cross.setAttribute('aria-label', 'Fechar instruções');
+            cross.addEventListener('click', () => help.close());
+            help.appendChild(cross);
+            const list = document.createElement('div');
+            list.className = 'help-copy';
+            for (const [command, explanation] of commands) {
+                const paragraph = document.createElement('p');
+                const term = document.createElement('b');
+                term.textContent = command + ': ';
+                paragraph.append('• ', term, explanation);
+                list.appendChild(paragraph);
+            }
+            help.appendChild(list);
+            const close = document.createElement('button');
+            close.textContent = 'ENTENDIDO';
+            close.className = 'help-dismiss';
+            close.addEventListener('click', () => help.close());
+            help.appendChild(close);
+            document.body.appendChild(help);
+            helpButtons.forEach(button => button.addEventListener('click', () => { if (!button.hidden) help.showModal(); }));
+        }
+        poll();
+        setInterval(poll, 7000);
+        setInterval(render, 1000);
+        document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true });
+    else mount();
+})();

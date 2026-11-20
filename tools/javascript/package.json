@@ -1,0 +1,9 @@
+{
+  "name": "oracle-javascript-build",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "acorn": "8.14.0",
+    "javascript-obfuscator": "4.1.1"
+  }
+}

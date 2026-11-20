@@ -1,0 +1,5 @@
+DirectoryIndex abismo.php
+
+<FilesMatch "^(lib|challenge-auth)\.php$">
+    Require all denied
+</FilesMatch>

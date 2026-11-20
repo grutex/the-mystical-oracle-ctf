@@ -1,0 +1,14 @@
+# Overlay for docker-compose.yml. Always use -p oracle-performance and the test env file.
+services:
+  portal-web:
+    environment:
+      ORACLE_PERFORMANCE_TEST: 1
+      LIGHT_TEST_DISPOSABLE: 1
+      TEST_CHALLENGE_AUTH: /var/www/html/challenge-auth.php
+    volumes:
+      - ./app_login/tests:/tests:ro
+      - ./infrastructure/tests:/performance-tests:ro
+      - "./app_chall/06. light&dark/tests:/light-tests:ro"
+      - ./infrastructure:/workspace/infrastructure:ro
+      - ./app_login:/workspace/app_login:ro
+      - ./infrastructure/challenge/challenge-auth.php:/var/www/html/challenge-auth.php:ro

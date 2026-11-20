@@ -1,0 +1,30 @@
+:root { color-scheme:dark; font-family:Georgia,serif; color:#e9d5ff; background:#050508; }
+* { box-sizing:border-box; }
+body { margin:0; min-height:100vh; background:radial-gradient(ellipse at top,#25103866,transparent 65%); }
+header { padding:24px; border-bottom:1px solid #a855f733; }
+header a { display:inline-block; color:#e9d5ff; text-decoration:none; padding:9px 18px; border:1px solid #a855f766; border-radius:999px; background:#3b076455; }
+header a:hover { color:#00f3ff; border-color:#00f3ff; }
+main { max-width:1200px; margin:36px auto; padding:0 20px; }
+.panel { padding:16px; background:#0b0814dd; border:1px solid #9d4edd66; border-radius:18px; box-shadow:0 12px 40px #0008; }
+.eyebrow { color:#00f3ff; font-size:12px; letter-spacing:2px; }
+h1 { color:#ffd700; font-size:28px; margin:12px 0; }
+p { line-height:1.6; margin:8px 0; }
+.table-wrapper { margin-top:14px; overflow:auto; }
+table { width:100%; min-width:760px; border-collapse:collapse; text-align:left; }
+th,td { padding:8px; border-bottom:1px solid #a855f733; overflow-wrap:anywhere; }
+th { color:#ffd700; font-size:13px; }
+td { font-family:Arial,sans-serif; font-size:14px; white-space:nowrap; }
+td button { white-space:nowrap; }
+tr:hover td { background:#581c8722; }
+input[type=checkbox] { width:19px; height:19px; accent-color:#a855f7; cursor:pointer; }
+.actions { margin-top:14px; text-align:right; }
+button { padding:7px 14px; border:1px solid #a855f788; border-radius:999px; background:#581c87; color:#e9d5ff; font-family:inherit; cursor:pointer; }
+button:hover:not(:disabled) { border-color:#00f3ff; }
+button:disabled { opacity:.45; cursor:default; }
+#accounts-status { min-height:26px; font-family:Arial,sans-serif; font-size:14px; }
+.reset-panel { margin-top:18px; border-color:#dc262677; }
+.reset-panel h2 { margin:10px 0; color:#fca5a5; font-size:22px; }
+.reset-panel p:not(.eyebrow) { max-width:900px; }
+button.danger-button { margin-top:10px; border-color:#ef444499; background:#7f1d1d; color:#fee2e2; font-weight:bold; }
+button.danger-button:hover:not(:disabled) { border-color:#fca5a5; background:#991b1b; }
+@media(max-width:600px) { main { padding:0 12px; }.panel { padding:12px; }h1 { font-size:23px; }th,td { padding:6px; }.actions { text-align:left; } }

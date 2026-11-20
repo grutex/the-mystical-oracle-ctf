@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystical Oracle · Além do Véu</title>
+    <meta name="description" content="Atravessaste o sussurro. Agora prova que conheces o Nome.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600;800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/veil.css">
+</head>
+<body>
+
+    <div class="spirit-mist"></div>
+    <div class="stars-bg"></div>
+
+    <main class="veil-wrapper">
+
+        <!-- ══════════ BARRA DE TRAVESSIA (navegação entre telas) ══════════
+             O 1º botão é relativo (volta ao portão deste subdomínio).
+             Ajuste os domínios de produção nos demais se necessário.
+        -->
+        <nav class="travessia" aria-label="Travessia entre telas">
+            <a class="trav-btn" data-nav="portao" href="/oracle-spirit" title="Voltar ao Portão do Espírito">
+                <span class="trav-glyph">⟵</span>
+                <span class="trav-label">Portão<small>do espírito</small></span>
+            </a>
+            <a class="trav-btn" data-nav="oraculo" href="https://mysticaloraclectf.com.br/oracle" title="Voltar ao Oráculo para submeter a flag">
+                <span class="trav-glyph">☍</span>
+                <span class="trav-label">Oráculo<small>submeter flag</small></span>
+            </a>
+            <a class="trav-btn" data-nav="mapa" href="https://mapa.mysticaloraclectf.com.br" title="Ver o mapa dos cinco elementos">
+                <span class="trav-glyph">⬡</span>
+                <span class="trav-label">Mapa<small>dos elementos</small></span>
+            </a>
+        </nav>
+
+        <section class="veil-card">
+
+            <header class="veil-header">
+                <span class="veil-eyebrow">✧ Além do Sussurro ✧</span>
+                <h1 class="veil-title">O Véu do Espírito</h1>
+                <p class="veil-subtitle">Somente o Nome verdadeiro rasga a névoa</p>
+            </header>
+
+            <div class="gate-divider">✦ &nbsp; ⟡ &nbsp; ✦</div>
+
+            <div class="veil-speech">
+                <p>
+                  		   Atravessaste o sussurro e chegaste ao <em>Véu</em>. Aqui não há
+                   		    força que valha. Apenas o nome 'dele' conseguirá abrir o véu.
+		    Um Nome falso é <strong>engolido</strong> pela névoa.
+                </p>
+                <p>
+                    Os espíritos que rondam este limiar foram catalogados num
+                    grimório mas ele <strong>não se mostra aos olhos comuns</strong>.
+                </p>
+                <p class="veil-hint">
+                    A fenda escuta. Sussurre seu <strong>Nome</strong>.
+                </p>
+            </div>
+
+            <form id="veil-form" class="veil-form" action="/veil" method="get" autocomplete="off">
+                <label for="q" class="veil-label">Chame-o</label>
+                <div class="veil-input-row">
+                    <input type="text" id="q" name="q" class="veil-input"
+                           placeholder="ex.: Abismo" spellcheck="false">
+                    <button type="submit" class="veil-btn">Sussurrar</button>
+                </div>
+            </form>
+
+            <div class="grimoire-seal" hidden aria-hidden="true">
+                <a href="/whispers" rel="noopener" data-grimorio>ᛟ grimório selado dos Nomes ᛟ</a>
+            </div>
+
+            <div id="veil-result" class="veil-result" role="status" aria-live="polite"></div>
+
+            <footer class="veil-footer">
+                <span class="footer-mark">MYSTICAL ORACLE · Espírito · o véu recorda cada tentativa</span>
+            </footer>
+
+        </section>
+    </main>
+
+    <!-- Navegação entre telas (localhost <-> produção) -->
+    <script src="/oracle-runtime.js"></script>
+    <script src="/travessia.js"></script>
+    <script src="/veil.js?v=flag-submit-2"></script>
+</body>
+</html>

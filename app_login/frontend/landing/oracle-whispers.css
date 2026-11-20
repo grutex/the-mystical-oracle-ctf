@@ -1,0 +1,114 @@
+.oracle-whispers {
+    position: fixed;
+    left: 0;
+    top: 36vh;
+    z-index: 40;
+    width: 48px;
+    min-height: 42px;
+    color: #e9d5ff;
+    font-family: 'Cormorant Garamond', serif;
+}
+.oracle-whispers[hidden], .oracle-whispers [hidden] { display: none; }
+.whispers-toggle {
+    position: absolute;
+    z-index: 2;
+    left: 8px;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #b46de0;
+    border-radius: 50%;
+    background: #170b25f5;
+    color: #ffd700;
+    font-size: 18px;
+    box-shadow: 0 0 18px #9d4edd40;
+    cursor: pointer;
+    transition: box-shadow .2s, border-color .2s;
+}
+.whispers-toggle:hover, .whispers-toggle:focus-visible {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 22px #9d4edd80, 0 0 10px #ffd70040;
+}
+.whispers-unread {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    min-width: 25px;
+    padding: 2px 5px;
+    border: 1px solid #b46de0;
+    border-radius: 999px;
+    background: #170b25;
+    color: #ffd700;
+    font: 700 11px/18px 'Cinzel', serif;
+}
+.oracle-whispers.is-open {
+    top: clamp(150px, 24vh, 240px);
+    width: min(326px, calc(100vw - 8px));
+}
+.oracle-whispers.is-open .whispers-toggle {
+    left: auto;
+    right: 0;
+    top: calc(50% - 21px);
+}
+.whispers-panel {
+    display: flex;
+    flex-direction: column;
+    height: min(470px, calc(100dvh - 190px));
+    min-height: 220px;
+    margin: 0 22px 0 18px;
+    padding: 18px 16px 12px;
+    border: 1px solid #a855b7;
+    border-radius: 28px;
+    background: linear-gradient(150deg, #140b21f5, #08050ff5);
+    box-shadow: 0 12px 36px #0009, inset 0 0 24px #9d4edd0d;
+    backdrop-filter: blur(16px);
+}
+.whispers-heading { position: relative; padding: 12px 0; border-bottom: 1px solid #a855b74d; }
+.whispers-heading > span {
+    position: absolute;
+    top: -42px;
+    left: calc(50% - 23px);
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #ffd700;
+    border-radius: 50%;
+    background: #230b38;
+    color: #ffd700;
+    box-shadow: 0 0 18px #ffd70040;
+}
+.whispers-heading h2 { margin: 0; color: #ffd700; font: 700 12px/1.7 'Cinzel', serif; text-align: center; }
+.whispers-heading p { margin: 3px 0 0; font-size: 15px; font-style: italic; text-align: center; color: #c4a5df; }
+.whispers-messages {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #6b348b transparent;
+    margin: 0;
+    padding: 12px 2px;
+    list-style: none;
+}
+.whispers-messages li { margin-bottom: 10px; padding: 10px 12px; border: 1px solid #9d4edd4d; border-radius: 13px; background: #24103666; }
+.whispers-messages time { display: block; margin-bottom: 5px; color: #d8b5f2; font: 600 10px/1.6 'Cinzel', serif; }
+.whispers-messages p { margin: 0; font-size: 16px; line-height: 1.4; color: #f3e8ff; white-space: pre-wrap; overflow-wrap: anywhere; }
+.whispers-empty { margin: 12px 0; color: #b9a0cc; text-align: center; font-style: italic; font-size: 15px; }
+.whispers-form { padding-top: 10px; border-top: 1px solid #a855b74d; }
+.whispers-form label { display: block; margin-bottom: 7px; color: #d8b5f2; font: 600 10px 'Cinzel', serif; }
+.whispers-form textarea { box-sizing: border-box; width: 100%; resize: vertical; min-height: 60px; max-height: 100px; padding: 9px; border: 1px solid #9d4edd66; border-radius: 10px; background: #07050e; color: #f3e8ff; font: 15px/1.4 'Cormorant Garamond', serif; }
+.whispers-form textarea:focus { outline: 1px solid #c084fc; }
+.whispers-compose-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 7px; }
+.whispers-compose-footer span { font: 10px 'Cinzel', serif; color: #ac87c5; }
+.whispers-compose-footer button { padding: 7px 13px; border: 1px solid #a855f7; border-radius: 999px; background: #581c87; color: #f3e8ff; font: 600 10px 'Cinzel', serif; cursor: pointer; }
+.whispers-compose-footer button:disabled { opacity: .5; cursor: wait; }
+.whispers-status { margin: 7px 0 0; font-size: 13px; color: #e9d5ff; }
+.whispers-status:empty { display: none; }
+@media (max-width: 640px) {
+    .oracle-whispers.is-open { top: 180px; }
+    .whispers-panel { height: min(440px, calc(100dvh - 200px)); }
+}

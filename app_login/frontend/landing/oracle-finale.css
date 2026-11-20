@@ -1,0 +1,119 @@
+body.oracle-finished {
+    background-color: #060606;
+}
+
+body.oracle-finished > :not(header):not(.oracle-finale),
+body.oracle-finished > header > :not(#oracle-welcome),
+body.oracle-finished .oracle-welcome-copy {
+    filter: grayscale(1);
+}
+
+body.oracle-finished > header {
+    border-color: rgba(53, 53, 53, .3);
+}
+
+#pupil.oracle-complete {
+    fill: #fff;
+    stroke: #fff;
+    filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 12px #fff);
+    animation: oracle-pupil-glow 3s ease-in-out infinite;
+    cursor: pointer;
+}
+
+#pupil.oracle-complete:focus-visible {
+    outline: none;
+    stroke-width: 3px;
+}
+
+@keyframes oracle-pupil-glow {
+    50% { filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 18px #fff); }
+}
+
+.oracle-completion-crown {
+    position: relative;
+    isolation: isolate;
+    display: inline-block;
+    margin-left: .4em;
+    font-style: normal;
+    color: #ffd700;
+    text-shadow: 0 0 5px #ffd700b3, 0 0 14px #e9ad4099;
+}
+
+.oracle-completion-crown::before {
+    content: '';
+    position: absolute;
+    inset: -.35em;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffd70055 0%, #e9ad4026 45%, transparent 72%);
+    filter: blur(3px);
+    pointer-events: none;
+}
+
+.oracle-completion-crown[hidden] { display: none; }
+
+.oracle-replay-button {
+    position: fixed;
+    top: 80px;
+    left: 12px;
+    z-index: 2147483646;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 13px;
+    border: 1px solid #a78bfa;
+    border-radius: 10px;
+    background: #100b1ff2;
+    color: #f5f0ff;
+    font: 600 12px 'Cinzel', serif;
+    line-height: 16px;
+    box-shadow: 0 4px 18px #0008;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.oracle-replay-button[hidden] { display: none; }
+.oracle-replay-button:disabled { cursor: wait; opacity: .6; }
+.oracle-replay-button:hover,
+.oracle-replay-button:focus-visible {
+    border-color: #ffd700;
+    box-shadow: 0 0 16px #ffd70040;
+    outline: none;
+}
+
+.oracle-finale {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    isolation: isolate;
+}
+
+.oracle-finale-wash {
+    position: absolute;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 65px 35px #fff;
+    transform: scale(0);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.oracle-finale-message {
+    position: relative;
+    z-index: 1;
+    padding: 1.5rem;
+    margin: 0;
+    color: #7b2cbf;
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-size: clamp(1.7rem, 5vw, 4rem);
+    text-align: center;
+    text-shadow: 0 0 24px #9d4edd30;
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #pupil.oracle-complete { animation: none; }
+}

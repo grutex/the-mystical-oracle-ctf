@@ -1,0 +1,16 @@
+:root { color-scheme: dark; --fundo:#04121d; --tinta:#cfe9f7; --agua:#7dd3fc; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--fundo); color:var(--tinta); font-family:Georgia,serif; line-height:1.8; padding:48px 20px; }
+.poema { max-width:680px; margin:auto; }
+h1,h2 { color:var(--agua); text-align:center; }
+.sub,.fim { text-align:center; color:#7aa9bf; font-style:italic; }
+.estrofe { margin:0 0 28px; font-size:1.15rem; }
+.estrofe p { margin:0; }
+.rodape-oculto { margin:0 0 24px 6px; color:#0a2231; font-family:monospace; font-size:8px; letter-spacing:.5px; user-select:text; }
+.arquivo,.resultado { margin:32px 0; padding:24px; background:#082436; border:1px solid #215270; border-radius:12px; }
+label { display:block; }
+textarea { width:100%; min-height:140px; background:#04121d; color:var(--tinta); border:1px solid #215270; border-radius:8px; padding:12px; font:inherit; }
+button,a { color:var(--agua); }
+button { padding:10px 16px; margin:10px 10px 0 0; background:#083047; border:1px solid #38bdf8; border-radius:8px; cursor:pointer; font:inherit; }
+button:disabled { opacity:.5; cursor:wait; }
+#consulta-status { font-family:system-ui,sans-serif; }

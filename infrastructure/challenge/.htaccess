@@ -1,0 +1,21 @@
+RewriteEngine On
+
+# O endpoint intencional do desafio do Fogo continua com o nome revelador.
+RewriteRule ^sessions/?$ sessions.php [L,QSA]
+
+# Todas as telas passam pelo controlador que exige um ingresso do portal.
+RewriteRule ^$ page.php?route=/ [L,QSA]
+RewriteRule ^(oracle-spirit|veil|whispers|oracle-air|arquivo|oracle-fire|forja|oracle-water|espelho|oracle-earth|catalogo|oracle-light-dark|arquivo-sombras|leitor-sombras|observatorio)/?$ page.php?route=/$1 [L,QSA]
+
+# Assets também exigem o ingresso. asset.php resolve os aliases limpos do Véu
+# e impede traversal para fora da raiz publicada.
+RewriteRule ^(.+\.(?:css|js|txt|png|jpe?g|gif|svg|webp|ico|woff2?))$ asset.php?path=$1 [L,NC]
+
+# Os arquivos-fonte não podem contornar as rotas autenticadas.
+<FilesMatch "\.html$">
+    Require all denied
+</FilesMatch>
+
+<Files "challenge-auth.php">
+    Require all denied
+</Files>

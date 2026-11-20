@@ -1,0 +1,152 @@
+/* ==========================================================================
+   ESPELHO DAS ÁGUAS — página do Stored XSS (Desafio 04 · water)
+   Tema Água (azul/ciano #38bdf8), coerente com o Portão da Água.
+   ========================================================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg-dark: #04080d;
+    --water: #38bdf8;
+    --water-light: #7dd3fc;
+    --water-deep: #0369a1;
+    --water-glow: rgba(56, 189, 248, 0.42);
+    --gold: #d4af37;
+    --gold-light: #fef08a;
+    --crimson: #f87171;
+    --glass-bg: rgba(6, 15, 24, 0.82);
+    --glass-border: rgba(56, 189, 248, 0.28);
+    --text: #dcf1ff;
+    --text-dim: #8fb2c9;
+    --font-serif: 'Cinzel', serif;
+    --font-title: 'Cinzel Decorative', cursive;
+    --font-body: 'Cormorant Garamond', serif;
+    --font-mono: 'Courier New', monospace;
+}
+
+body {
+    background-color: var(--bg-dark); color: var(--text); font-family: var(--font-body);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    overflow-x: hidden; position: relative; padding: 40px 16px;
+}
+
+.water-strata {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+        radial-gradient(60% 55% at 50% 72%, rgba(3,105,161,.32) 0%, transparent 68%),
+        radial-gradient(45% 40% at 18% 20%, rgba(56,189,248,.14) 0%, transparent 70%),
+        radial-gradient(45% 40% at 85% 30%, rgba(125,211,252,.10) 0%, transparent 72%);
+    filter: blur(30px); animation: strataDrift 17s ease-in-out infinite alternate; pointer-events: none;
+}
+@keyframes strataDrift { 0%{transform:translateY(0) scale(1);opacity:.85} 100%{transform:translateY(-14px) scale(1.04);opacity:1} }
+.stars-bg {
+    position: fixed; inset: 0; z-index: 1;
+    background-image:
+        radial-gradient(1.5px 1.5px at 20px 30px,#fff,rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px,rgba(125,211,252,.85),rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px,var(--water),rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 160px 120px,#fff,rgba(0,0,0,0));
+    background-repeat: repeat; background-size: 200px 200px; opacity:.3;
+    animation: starsPulse 8s infinite alternate ease-in-out; pointer-events: none;
+}
+@keyframes starsPulse { 0%{opacity:.2;transform:scale(1)} 100%{opacity:.44;transform:scale(1.03)} }
+
+.cat-wrapper { position: relative; z-index: 10; width: 100%; max-width: 720px; }
+
+.cat-card {
+    background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border); border-radius: 24px; padding: 42px 36px 28px;
+    box-shadow: 0 25px 60px rgba(0,0,0,.88), inset 0 0 28px rgba(56,189,248,.08), 0 0 38px rgba(56,189,248,.14);
+}
+
+.cat-header { text-align: center; margin-bottom: 14px; }
+.cat-eyebrow { display:inline-block; font-family:var(--font-serif); font-size:.72rem; letter-spacing:5px; text-transform:uppercase; color:var(--gold); opacity:.85; margin-bottom:12px; }
+.cat-title {
+    font-family:var(--font-title); font-size:clamp(1.7rem,5vw,2.4rem); font-weight:700; letter-spacing:2px;
+    background:linear-gradient(180deg,var(--water-light),var(--water) 55%,var(--water-deep));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow:0 0 30px var(--water-glow); margin-bottom:6px;
+}
+.cat-subtitle { font-family:var(--font-serif); font-size:.85rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); }
+.gate-divider { text-align:center; color:var(--gold); letter-spacing:4px; opacity:.7; margin:16px 0 22px; font-size:.95rem; }
+
+/* Seções */
+.secao { margin-top:8px; padding:18px; border:1px solid rgba(56,189,248,.22); border-radius:16px; background:rgba(56,189,248,.05); margin-bottom:18px; }
+.secao-head { margin-bottom:8px; }
+.secao-title { font-family:var(--font-serif); font-size:.9rem; letter-spacing:1px; color:var(--water-light); }
+.secao-desc { font-size:1rem; color:var(--text-dim); margin-bottom:12px; }
+
+/* Formulários */
+.busca-label { display:block; font-family:var(--font-serif); font-size:.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px; }
+.cat-input, textarea.cat-input {
+    width:100%; background:rgba(4,8,13,.65); border:1px solid rgba(56,189,248,.3); border-radius:12px;
+    padding:12px 15px; color:var(--text); font-family:var(--font-mono); font-size:.98rem;
+    transition:border-color .25s ease, box-shadow .25s ease;
+}
+textarea.cat-input { resize:vertical; min-height:96px; }
+.cat-input::placeholder { color:rgba(143,178,201,.5); }
+.cat-input:focus { outline:none; border-color:var(--water); box-shadow:0 0 18px rgba(56,189,248,.3); }
+.form-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+.form-row .cat-input { flex:1 1 200px; width:auto; }
+
+.cat-btn {
+    padding:12px 22px; font-family:var(--font-serif); font-size:.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase;
+    color:#eaf9ff; cursor:pointer; border:1px solid rgba(56,189,248,.5); border-radius:12px;
+    background:linear-gradient(135deg, rgba(3,105,161,.55), rgba(56,189,248,.35)); box-shadow:inset 0 0 14px rgba(56,189,248,.15);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; white-space:nowrap;
+}
+.cat-btn:hover { transform:translateY(-2px); border-color:var(--water-light); box-shadow:0 0 26px rgba(56,189,248,.45); }
+
+/* Caixa do ponto de coleta (correnteza pessoal) */
+.coleta-box { margin-top:12px; padding:10px 14px; background:rgba(4,8,13,.7); border:1px dashed rgba(56,189,248,.35); border-radius:10px; }
+.coleta-label { display:block; font-family:var(--font-serif); font-size:.62rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); opacity:.8; margin-bottom:4px; }
+.coleta-row { display:flex; gap:8px; align-items:center; }
+#coleta-url { flex:1; font-family:var(--font-mono); font-size:.82rem; color:var(--water-light); white-space:nowrap; overflow-x:auto; }
+.mini-btn { padding:6px 10px; font-family:var(--font-serif); font-size:.62rem; letter-spacing:1px; text-transform:uppercase; color:var(--water-light); background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.4); border-radius:8px; cursor:pointer; white-space:nowrap; }
+
+/* Lista de reflexos e capturas */
+.lista { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+.item { padding:10px 14px; background:rgba(4,8,13,.55); border:1px solid rgba(56,189,248,.16); border-radius:10px; }
+.item-corpo { font-family:var(--font-mono); font-size:.86rem; color:var(--text); word-break:break-word; white-space:pre-wrap; }
+.item-meta { font-family:var(--font-serif); font-size:.62rem; letter-spacing:1px; text-transform:uppercase; margin-top:6px; }
+.status-pend { color:var(--gold-light); }
+.status-ok { color:var(--water-light); }
+.vazio { color:var(--text-dim); font-style:italic; padding:6px 0; }
+.sussurro { margin-top:10px; font-family:var(--font-body); font-style:italic; font-size:1rem; color:var(--text-dim); opacity:.85; }
+.arquivo-link { display:inline-block; font-family:var(--font-mono); font-size:.92rem; color:var(--gold-light); text-decoration:none; word-break:break-all; border-bottom:1px dashed rgba(254,240,138,.5); }
+.arquivo-link:hover { color:#fff; border-bottom-color:#fff; }
+
+/* Saída do salão / mensagens */
+.saida { margin-top:12px; }
+.arquivo-box { padding:14px 16px; background:rgba(4,8,13,.8); border:1px solid rgba(56,189,248,.35); border-radius:12px; font-family:var(--font-mono); font-size:.9rem; color:var(--water-light); white-space:pre-wrap; word-break:break-word; }
+.aviso-fail { color:var(--crimson); font-style:italic; }
+.aviso-ok { color:var(--water-light); }
+
+.flag-box {
+    display:inline-block; margin-top:6px; padding:12px 20px; font-family:var(--font-mono); font-size:1.05rem; letter-spacing:1px;
+    color:var(--gold-light); background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.45); border-radius:12px;
+    box-shadow:0 0 26px rgba(56,189,248,.22); user-select:all;
+}
+.flag-cta { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-top:16px; }
+.cta-btn { display:inline-flex; align-items:center; gap:9px; padding:12px 20px; text-decoration:none; cursor:pointer; font-family:var(--font-serif); font-size:.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; border-radius:12px; transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.cta-primary { color:#03202f; background:linear-gradient(135deg,var(--water),#38bdf8); border:1px solid rgba(56,189,248,.6); box-shadow:0 0 22px rgba(56,189,248,.35); }
+.cta-primary:hover { transform:translateY(-2px); box-shadow:0 0 34px rgba(56,189,248,.55); }
+.cta-ghost { color:var(--water-light); background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.45); }
+.cta-ghost:hover { transform:translateY(-2px); border-color:var(--water-light); box-shadow:0 0 24px rgba(56,189,248,.4); }
+
+.cat-footer { margin-top:24px; padding-top:16px; border-top:1px solid rgba(56,189,248,.14); text-align:center; }
+.footer-mark { font-family:var(--font-serif); font-size:.64rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); opacity:.7; }
+
+.travessia { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-bottom:22px; }
+.trav-btn { display:inline-flex; align-items:center; gap:10px; padding:9px 18px; text-decoration:none; font-family:var(--font-serif); color:var(--text-dim); background:rgba(6,15,24,.7); border:1px solid rgba(56,189,248,.22); border-radius:999px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); transition:transform .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease; }
+.trav-btn:hover { transform:translateY(-2px); color:var(--water-light); border-color:var(--water); box-shadow:0 0 22px rgba(56,189,248,.28); }
+.trav-glyph { font-size:1.15rem; color:var(--gold-light); line-height:1; }
+.trav-label { display:flex; flex-direction:column; line-height:1.15; font-size:.82rem; letter-spacing:1px; text-transform:uppercase; }
+.trav-label small { font-size:.6rem; letter-spacing:1px; text-transform:uppercase; opacity:.65; }
+
+@media (max-width:560px) {
+    .cat-card { padding:30px 20px 22px; }
+    .form-row { flex-direction:column; }
+    .cat-btn { padding:12px; width:100%; }
+    .cta-btn { width:100%; justify-content:center; }
+}

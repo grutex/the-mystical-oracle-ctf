@@ -1,0 +1,325 @@
+name: mystical-oracle
+
+x-access-environment: &access-environment
+  ACCESS_MODE: ${ACCESS_MODE:-0}
+  PORTAL_HOST: ${PORTAL_HOST:-mysticaloraclectf.com.br}
+  MAP_HOST: ${MAP_HOST:-mapa.mysticaloraclectf.com.br}
+  CHALLENGE_HOST: ${CHALLENGE_HOST:-mysticaloraclectf.com.br}
+  LOCAL_PORT: ${ORACLE_PORT:-8080}
+
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: infrastructure/nginx/Dockerfile
+    entrypoint: ["/bin/sh", "/opt/oracle/nginx/access-mode.sh"]
+    command: ["nginx", "-g", "daemon off;"]
+    ports:
+      - "${ORACLE_BIND:-127.0.0.1}:${ORACLE_PORT:-8080}:80"
+    environment:
+      <<: *access-environment
+      PORTAL_HOST: ${PORTAL_HOST:-mysticaloraclectf.com.br}
+      CHALLENGE_HOST: ${CHALLENGE_HOST:-mysticaloraclectf.com.br}
+      PUBLIC_SCHEME: ${PUBLIC_SCHEME:-http}
+      NGINX_ENVSUBST_FILTER: HOST|PUBLIC_SCHEME
+    depends_on:
+      - portal-web
+      - spirit-web
+      - air-web
+      - fire-web
+      - water-web
+      - water-depth-web
+      - earth-web
+      - light-dark-web
+    restart: unless-stopped
+
+  portal-web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile
+      args:
+        APP_SOURCE: app_login
+        APP_MODE: portal
+        APP_INDEX: login
+    environment:
+      <<: *access-environment
+      DB_HOST: portal-db
+      DB_NAME: MYSTICAL_ORACLE_LOGIN_DB
+      DB_USER: oracle
+      DB_PASS: ${DB_PASSWORD:?Copie .env.example para .env e defina DB_PASSWORD}
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      SESSION_TTL: ${SESSION_TTL:-21600}
+      SESSION_PATH: /var/www/sessions
+      CHALLENGE_HOST: ${CHALLENGE_HOST:-mysticaloraclectf.com.br}
+      PUBLIC_PORT: ${PUBLIC_PORT:-8080}
+    volumes:
+      - portal-sessions:/var/www/sessions
+      - fire-data:/var/www/challenge-data/fire
+      - water-data:/var/www/challenge-data/water
+    depends_on:
+      portal-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  spirit-web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile
+      args:
+        APP_SOURCE: "app_chall/01. spirit"
+        APP_MODE: challenge
+        APP_INDEX: oracle-spirit
+    environment:
+      <<: *access-environment
+      CHALLENGE_KEY: spirit
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      CHALLENGE_TTL: ${SESSION_TTL:-21600}
+      SESSION_TTL: ${SESSION_TTL:-21600}
+      PORTAL_SESSION_PATH: /var/www/portal-sessions
+      PORTAL_HOST: ${PORTAL_HOST:-mysticaloraclectf.com.br}
+      PUBLIC_PORT: ${PUBLIC_PORT:-8080}
+    volumes:
+      - portal-sessions:/var/www/portal-sessions:ro
+    restart: unless-stopped
+
+  air-web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile
+      args:
+        APP_SOURCE: "app_chall/02. air"
+        APP_MODE: challenge
+        APP_INDEX: oracle-air
+    environment:
+      <<: *access-environment
+      CHALLENGE_KEY: air
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      CHALLENGE_TTL: ${SESSION_TTL:-21600}
+      SESSION_TTL: ${SESSION_TTL:-21600}
+      PORTAL_SESSION_PATH: /var/www/portal-sessions
+      PORTAL_HOST: ${PORTAL_HOST:-mysticaloraclectf.com.br}
+      PUBLIC_PORT: ${PUBLIC_PORT:-8080}
+    volumes:
+      - portal-sessions:/var/www/portal-sessions:ro
+    restart: unless-stopped
+
+  portal-db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: MYSTICAL_ORACLE_LOGIN_DB
+      MARIADB_USER: oracle
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Copie .env.example para .env e defina DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Defina DB_ROOT_PASSWORD no .env}
+    volumes:
+      - portal-data:/var/lib/mysql
+      - ./app_login/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./app_login/db/migrations/002_personal_flags.sql:/docker-entrypoint-initdb.d/02-personal-flags.sql:ro
+      - ./app_login/db/migrations/003_contest_start.sql:/docker-entrypoint-initdb.d/03-contest-start.sql:ro
+      - ./app_login/db/migrations/004_enable_light_dark.sql:/docker-entrypoint-initdb.d/04-enable-light-dark.sql:ro
+      - ./app_login/db/migrations/005_contest_pause.sql:/docker-entrypoint-initdb.d/05-contest-pause.sql:ro
+      - ./app_login/db/migrations/006_challenge_points.sql:/docker-entrypoint-initdb.d/06-challenge-points.sql:ro
+      - ./app_login/db/migrations/007_account_emails_test.sql:/docker-entrypoint-initdb.d/07-account-emails-test.sql:ro
+      - ./app_login/db/migrations/008_light_dark_points.sql:/docker-entrypoint-initdb.d/08-light-dark-points.sql:ro
+      - ./app_login/db/migrations/009_named_test_accounts.sql:/docker-entrypoint-initdb.d/09-named-test-accounts.sql:ro
+      - ./app_login/db/migrations/011_gandalf_password.sql:/docker-entrypoint-initdb.d/11-gandalf-password.sql:ro
+      - ./app_login/db/migrations/012_water_earth_points.sql:/docker-entrypoint-initdb.d/12-water-earth-points.sql:ro
+      - ./app_login/db/migrations/013_oracle_finale.sql:/docker-entrypoint-initdb.d/13-oracle-finale.sql:ro
+      - ./app_login/db/migrations/014_account_crown.sql:/docker-entrypoint-initdb.d/14-account-crown.sql:ro
+      - ./app_login/db/migrations/015_oracle_whispers.sql:/docker-entrypoint-initdb.d/15-oracle-whispers.sql:ro
+      - ./app_login/db/migrations/016_login_lockout.sql:/docker-entrypoint-initdb.d/16-login-lockout.sql:ro
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  fire-web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile
+      args:
+        APP_SOURCE: "app_chall/03. fire"
+        APP_MODE: fire
+        APP_INDEX: oracle-fire
+    environment:
+      <<: *access-environment
+      CHALLENGE_KEY: fire
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+      FIRE_DATA: /var/www/data
+      APACHE_MAX_REQUEST_WORKERS: ${FIRE_MAX_WORKERS:-150}
+      # Keep ready workers for the four simultaneous locks (300 ms window).
+      APACHE_START_SERVERS: 10
+      APACHE_MIN_SPARE_SERVERS: 10
+      APACHE_MAX_SPARE_SERVERS: 20
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      CHALLENGE_TTL: ${SESSION_TTL:-21600}
+      SESSION_TTL: ${SESSION_TTL:-21600}
+      PORTAL_SESSION_PATH: /var/www/portal-sessions
+      PORTAL_HOST: ${PORTAL_HOST:-mysticaloraclectf.com.br}
+      PUBLIC_PORT: ${PUBLIC_PORT:-8080}
+    volumes:
+      - fire-data:/var/www/data
+      - portal-sessions:/var/www/portal-sessions:ro
+    restart: unless-stopped
+
+  water-web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile
+      args:
+        APP_SOURCE: "app_chall/04. water"
+        APP_MODE: water
+        APP_INDEX: oracle-water
+    environment:
+      <<: *access-environment
+      CHALLENGE_KEY: water
+      CHALLENGE_HOST: ${CHALLENGE_HOST:-mysticaloraclectf.com.br}
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+      WATER_DATA: /var/www/data
+      WATER_BOT_TOKEN: ${WATER_BOT_TOKEN:?Defina WATER_BOT_TOKEN no .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      CHALLENGE_TTL: ${SESSION_TTL:-21600}
+      SESSION_TTL: ${SESSION_TTL:-21600}
+      PORTAL_SESSION_PATH: /var/www/portal-sessions
+      PORTAL_HOST: ${PORTAL_HOST:-mysticaloraclectf.com.br}
+      PUBLIC_PORT: ${PUBLIC_PORT:-8080}
+    volumes:
+      - water-data:/var/www/data
+      - portal-sessions:/var/www/portal-sessions:ro
+    restart: unless-stopped
+
+  # Outra origem: a superfície não pode ler o parecer reservado da Arquivista.
+  water-depth-web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile
+      args:
+        APP_SOURCE: "app_chall/04. water/depth"
+        APP_MODE: water-depth
+        APP_INDEX: abismo.php
+    environment:
+      <<: *access-environment
+      CHALLENGE_KEY: water
+      CHALLENGE_HOST: ${CHALLENGE_HOST:-mysticaloraclectf.com.br}
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+      WATER_BOT_TOKEN: ${WATER_BOT_TOKEN:?Defina WATER_BOT_TOKEN no .env}
+      WATER_DATA: /var/www/data
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      PUBLIC_PORT: ${PUBLIC_PORT:-8080}
+    volumes:
+      - water-data:/var/www/data
+      - portal-sessions:/var/www/portal-sessions:ro
+    restart: unless-stopped
+
+  # Guardiã (Stored XSS) e Arquivista (Reflected XSS), com contextos isolados.
+  water-bot:
+    build:
+      context: .
+      dockerfile: "app_chall/04. water/bot/Dockerfile"
+    environment:
+      WATER_WEB_URL: http://water-web
+      WATER_DEPTH_URL: http://water-depth-web
+      WATER_BOT_TOKEN: ${WATER_BOT_TOKEN:?Defina WATER_BOT_TOKEN no .env}
+      GUARDIA_INTERVAL_MS: ${GUARDIA_INTERVAL_MS:-4000}
+      GUARDIA_CONCURRENCY: ${GUARDIA_CONCURRENCY:-2}
+    depends_on:
+      - water-web
+      - water-depth-web
+    restart: unless-stopped
+
+  earth-web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile
+      args:
+        APP_SOURCE: "app_chall/05. earth"
+        APP_MODE: earth
+        APP_INDEX: oracle-earth
+    environment:
+      <<: *access-environment
+      DB_HOST: earth-db
+      DB_NAME: terra_relicario
+      DB_USER: relic_ro
+      DB_PASS: relicpw
+      CHALLENGE_KEY: earth
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      CHALLENGE_TTL: ${SESSION_TTL:-21600}
+      SESSION_TTL: ${SESSION_TTL:-21600}
+      PORTAL_SESSION_PATH: /var/www/portal-sessions
+      PORTAL_HOST: ${PORTAL_HOST:-mysticaloraclectf.com.br}
+      PUBLIC_PORT: ${PUBLIC_PORT:-8080}
+    volumes:
+      - portal-sessions:/var/www/portal-sessions:ro
+    depends_on:
+      earth-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  light-dark-web:
+    build:
+      context: .
+      dockerfile: infrastructure/Dockerfile
+      args:
+        APP_SOURCE: "app_chall/06. light&dark"
+        APP_MODE: challenge
+        APP_INDEX: oracle-light-dark
+    environment:
+      <<: *access-environment
+      CHALLENGE_KEY: light_dark
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+      CHALLENGE_TTL: ${SESSION_TTL:-21600}
+      SESSION_TTL: ${SESSION_TTL:-21600}
+      PORTAL_SESSION_PATH: /var/www/portal-sessions
+      PORTAL_HOST: ${PORTAL_HOST:-mysticaloraclectf.com.br}
+      PUBLIC_PORT: ${PUBLIC_PORT:-8080}
+    volumes:
+      - portal-sessions:/var/www/portal-sessions:ro
+    networks:
+      - default
+      - light-tower
+    depends_on:
+      - light-tower
+    restart: unless-stopped
+
+  # Somente o prisma alcança esta rede. Sem porta publicada ou acesso ao portal.
+  light-tower:
+    build:
+      context: .
+      dockerfile: "app_chall/06. light&dark/internal/Dockerfile"
+    environment:
+      ACCOUNT_SECRET: ${ACCOUNT_SECRET:?Defina ACCOUNT_SECRET no .env}
+    networks:
+      - light-tower
+    restart: unless-stopped
+
+  earth-db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: ${EARTH_DB_ROOT_PASSWORD:?Defina EARTH_DB_ROOT_PASSWORD no .env}
+      MARIADB_DATABASE: terra_relicario
+    volumes:
+      - earth-data:/var/lib/mysql
+      - "./app_chall/05. earth/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro"
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+networks:
+  light-tower:
+    internal: true
+
+volumes:
+  portal-data:
+  portal-sessions:
+  fire-data:
+  water-data:
+  earth-data:

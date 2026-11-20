@@ -1,0 +1,380 @@
+/* ==========================================================================
+   PORTÃO DO ESPÍRITO — Mystical Oracle CTF
+   Elemento: Espírito (roxo etéreo / névoa espectral)
+   Segue o design system do portal de login (Cinzel / Cormorant / fundo estelar)
+   ========================================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg-dark: #050508;
+    --spirit: #a855f7;          /* cor do elemento Espírito (da landing dos desafios) */
+    --spirit-light: #d8b4fe;
+    --spirit-deep: #6b21a8;
+    --spirit-glow: rgba(168, 85, 247, 0.45);
+    --gold: #d4af37;
+    --gold-light: #fef08a;
+    --glass-bg: rgba(13, 10, 25, 0.82);
+    --glass-border: rgba(168, 85, 247, 0.28);
+    --text: #e9e2f5;
+    --text-dim: #a394c4;
+
+    --font-serif: 'Cinzel', serif;
+    --font-title: 'Cinzel Decorative', cursive;
+    --font-body: 'Cormorant Garamond', serif;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    position: relative;
+    padding: 40px 16px;
+}
+
+/* ==========================================================================
+   FUNDO ETÉREO — névoa espectral, estrelas e feixes de espírito
+   ========================================================================== */
+.spirit-mist {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(60% 55% at 50% 42%, rgba(107, 33, 168, 0.28) 0%, transparent 68%),
+        radial-gradient(45% 40% at 22% 78%, rgba(168, 85, 247, 0.16) 0%, transparent 70%),
+        radial-gradient(45% 40% at 82% 20%, rgba(216, 180, 254, 0.10) 0%, transparent 72%);
+    filter: blur(30px);
+    animation: mistDrift 16s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes mistDrift {
+    0%   { transform: translateY(0) scale(1);      opacity: 0.85; }
+    100% { transform: translateY(-18px) scale(1.05); opacity: 1;   }
+}
+
+.stars-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background-image:
+        radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, rgba(216, 180, 254, 0.85), rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px, var(--spirit), rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 160px 120px, #fff, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    opacity: 0.35;
+    animation: starsPulse 8s infinite alternate ease-in-out;
+    pointer-events: none;
+}
+
+@keyframes starsPulse {
+    0%   { opacity: 0.25; transform: scale(1); }
+    100% { opacity: 0.5;  transform: scale(1.03); }
+}
+
+.wisp-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   CARTÃO DO PORTÃO
+   ========================================================================== */
+.gate-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 620px;
+}
+
+.gate-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 46px 40px 34px;
+    text-align: center;
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.88),
+        inset 0 0 28px rgba(168, 85, 247, 0.08),
+        0 0 38px rgba(168, 85, 247, 0.14);
+    position: relative;
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.gate-card:hover {
+    border-color: rgba(168, 85, 247, 0.5);
+    box-shadow:
+        0 25px 65px rgba(0, 0, 0, 0.95),
+        inset 0 0 34px rgba(168, 85, 247, 0.16),
+        0 0 52px rgba(168, 85, 247, 0.24);
+}
+
+/* ---- Cabeçalho ---- */
+.gate-header { margin-bottom: 22px; }
+
+.gate-eyebrow {
+    display: inline-block;
+    font-family: var(--font-serif);
+    font-size: 0.72rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.85;
+    margin-bottom: 18px;
+}
+
+.spirit-sigil {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 16px;
+    color: var(--spirit-light);
+    filter: drop-shadow(0 0 12px var(--spirit-glow));
+    animation: sigilFloat 6s ease-in-out infinite, sigilSpin 60s linear infinite;
+}
+
+@keyframes sigilFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+}
+@keyframes sigilSpin {
+    from { rotate: 0deg; }
+    to   { rotate: 360deg; }
+}
+
+.gate-title {
+    font-family: var(--font-title);
+    font-size: clamp(1.9rem, 5vw, 2.7rem);
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(180deg, var(--spirit-light), var(--spirit) 55%, var(--spirit-deep));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px var(--spirit-glow);
+    margin-bottom: 6px;
+}
+
+.gate-subtitle {
+    font-family: var(--font-serif);
+    font-size: 0.95rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+.gate-divider {
+    color: var(--gold);
+    letter-spacing: 4px;
+    opacity: 0.7;
+    margin: 18px 0 24px;
+    font-size: 0.95rem;
+}
+
+/* ---- Fala do Oráculo ---- */
+.oracle-speech {
+    text-align: left;
+    margin: 0 auto 28px;
+    max-width: 480px;
+}
+
+.speech-line {
+    font-size: 1.18rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 14px;
+}
+
+.speech-line em { color: var(--spirit-light); font-style: italic; }
+.speech-line strong { color: var(--gold-light); font-weight: 600; }
+
+.speech-line.whisper {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-dim);
+    border-left: none;
+    margin-top: 20px;
+    font-size: 1.25rem;
+    opacity: 0.9;
+    text-shadow: 0 0 18px var(--spirit-glow);
+}
+
+/* ---- Orbes de dica ---- */
+.hint-orbs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 30px;
+}
+
+.hint-orb {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 16px;
+    background: rgba(168, 85, 247, 0.08);
+    border: 1px solid rgba(168, 85, 247, 0.22);
+    border-radius: 999px;
+    font-family: var(--font-serif);
+    font-size: 0.78rem;
+    letter-spacing: 0.5px;
+    color: var(--text-dim);
+    transition: transform 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.hint-orb:hover {
+    transform: translateY(-3px);
+    border-color: var(--spirit);
+    color: var(--spirit-light);
+}
+
+.orb-icon { font-size: 1rem; }
+
+/* ---- Botão "Escutar o Espírito" ---- */
+.listen-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 34px;
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #f5eefe;
+    cursor: pointer;
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(107, 33, 168, 0.55), rgba(168, 85, 247, 0.35));
+    box-shadow: 0 0 24px rgba(168, 85, 247, 0.25), inset 0 0 16px rgba(168, 85, 247, 0.15);
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.listen-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--spirit-light);
+    box-shadow: 0 0 38px rgba(168, 85, 247, 0.5), inset 0 0 22px rgba(168, 85, 247, 0.25);
+}
+
+.listen-btn:active { transform: translateY(0); }
+
+.btn-symbol {
+    font-size: 1.15rem;
+    color: var(--gold-light);
+    animation: sigilFloat 4s ease-in-out infinite;
+}
+
+/* ---- Sussurro revelado ---- */
+.whisper-reveal {
+    margin: 22px auto 0;
+    max-width: 460px;
+    font-size: 1.12rem;
+    line-height: 1.65;
+    color: var(--spirit-light);
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    text-shadow: 0 0 16px var(--spirit-glow);
+}
+
+.whisper-reveal.visible { opacity: 1; }
+
+/* ---- Rodapé ---- */
+.gate-footer {
+    margin-top: 30px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(168, 85, 247, 0.14);
+}
+
+.footer-mark {
+    font-family: var(--font-serif);
+    font-size: 0.68rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    opacity: 0.7;
+}
+
+/* ==========================================================================
+   BARRA DE TRAVESSIA (navegação entre telas)
+   ========================================================================== */
+.travessia {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.trav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 18px;
+    text-decoration: none;
+    font-family: var(--font-serif);
+    color: var(--text-dim);
+    background: rgba(13, 10, 25, 0.7);
+    border: 1px solid rgba(168, 85, 247, 0.22);
+    border-radius: 999px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.trav-btn:hover {
+    transform: translateY(-2px);
+    color: var(--spirit-light);
+    border-color: var(--spirit);
+    box-shadow: 0 0 22px rgba(168, 85, 247, 0.28);
+}
+
+.trav-glyph {
+    font-size: 1.15rem;
+    color: var(--gold-light);
+    line-height: 1;
+}
+
+.trav-label {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    font-size: 0.82rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.trav-label small {
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.65;
+    font-family: var(--font-serif);
+}
+
+/* ==========================================================================
+   RESPONSIVO
+   ========================================================================== */
+@media (max-width: 520px) {
+    .gate-card { padding: 34px 22px 26px; }
+    .speech-line { font-size: 1.05rem; }
+    .hint-orbs { gap: 10px; }
+    .listen-btn { width: 100%; }
+    .travessia { gap: 8px; }
+    .trav-btn { padding: 8px 14px; }
+}

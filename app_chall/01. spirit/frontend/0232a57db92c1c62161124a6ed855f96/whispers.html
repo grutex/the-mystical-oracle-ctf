@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grimório de nomes</title>
+    <style>
+        body { max-width: 42rem; margin: 2rem auto; padding: 0 1rem; font: 16px/1.5 system-ui, sans-serif; color: #171717; background: #f5f5f5; }
+        main { padding: 1.5rem; border: 1px solid #bbb; border-radius: 8px; background: #fff; }
+        h1 { margin-top: 0; font-size: 1.35rem; }
+        pre { padding: 1rem; overflow: auto; border: 1px solid #ccc; background: #f0f0f0; font: 15px/1.55 ui-monospace, monospace; }
+        button { padding: .6rem 1rem; cursor: pointer; }
+        #copy-status { margin-left: .6rem; color: #333; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Grimório de nomes</h1>
+        <p>Um nome por linha.</p>
+        <button type="button" id="copy-names">Copiar todos</button>
+        <span id="copy-status" role="status" aria-live="polite"></span>
+        <pre id="names">{{SPIRIT_NAMES}}</pre>
+    </main>
+    <script src="/oracle-runtime.js"></script>
+    <script>
+        document.getElementById('copy-names').addEventListener('click', async () => {
+            const names = document.getElementById('names').textContent.trim();
+            const status = document.getElementById('copy-status');
+            try {
+                await navigator.clipboard.writeText(names);
+                status.textContent = 'Lista copiada.';
+            } catch {
+                const selection = getSelection();
+                const range = document.createRange();
+                range.selectNodeContents(document.getElementById('names'));
+                selection.removeAllRanges();
+                selection.addRange(range);
+                status.textContent = 'Lista selecionada; use Ctrl+C.';
+            }
+        });
+    </script>
+</body>
+</html>

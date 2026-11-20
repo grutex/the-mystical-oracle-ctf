@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystical Oracle CTF — Path of the Elements</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- CSS Tailwind via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/oracle-runtime.js"></script>
+    <!-- CSS Customizado -->
+    <link rel="stylesheet" href="oracle_chall_landing.css">
+</head>
+<body class="bg-[#050508] text-slate-100 font-['Inter'] min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-purple-900 selection:text-purple-200">
+
+    <!-- Canvas de Poeira Cósmica / Partículas de Fundo -->
+    <canvas id="dust-canvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Overlay de Vignette e Textura Escura -->
+    <div class="fixed inset-0 bg-radial-vignette pointer-events-none z-0"></div>
+
+    <!-- Cabeçalho Principal -->
+    <header class="relative z-20 flex justify-between items-center px-6 py-5 max-w-7xl mx-auto w-full border-b border-purple-900/30 backdrop-blur-md bg-[#050508]/60">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-full bg-purple-950/80 border border-purple-500/50 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+                <svg class="w-5 h-5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-['Cinzel'] font-bold text-lg tracking-wider text-purple-200 uppercase">Mystical Oracle CTF</h1>
+                <p class="text-xs text-purple-400/70 tracking-widest font-mono">SERVER REALM • ORACLE-CTF.COM</p>
+            </div>
+        </div>
+
+        <!-- Controles & Audio -->
+        <div class="flex items-center space-x-4">
+            <button id="audio-toggle" class="flex items-center space-x-2 px-3 py-1.5 rounded-full border border-purple-500/30 bg-purple-950/30 text-xs font-mono text-purple-300 hover:border-purple-400 hover:bg-purple-900/40 transition-all shadow-[0_0_10px_rgba(147,51,234,0.15)]">
+                <span id="audio-icon" class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                <span id="audio-text">SOM: DESLIGADO</span>
+            </button>
+            <a data-portal-oracle href="https://mysticaloraclectf.com.br/oracle" class="px-4 py-1.5 rounded-md border border-cyan-500/40 bg-cyan-950/30 text-xs font-mono text-cyan-300 hover:bg-cyan-900/40 hover:border-cyan-400 transition-all shadow-[0_0_12px_rgba(6,182,212,0.2)]">
+                Voltar ao Oráculo
+            </a>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="relative z-10 max-w-7xl mx-auto px-4 py-6 w-full flex flex-col items-center flex-grow justify-center">
+        
+        <!-- Título do Caminho Elemental -->
+        <div class="text-center mb-4">
+            <h2 class="font-['Cinzel'] text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-cyan-200 to-purple-400 tracking-widest uppercase">
+                O Caminho dos Elementos
+            </h2>
+            <p class="text-xs md:text-sm text-purple-300/60 font-mono mt-1">
+                SELECIONE UMA ILHA PARA ACESSAR O SUBDOMÍNIO DO DESAFIO
+            </p>
+        </div>
+
+        <!-- Área Principal do Mapa do Caminho (6 Ilhas) -->
+        <div id="path-map-container" class="relative w-full max-w-5xl h-[560px] rounded-2xl border border-purple-900/20 bg-purple-950/10 backdrop-blur-sm overflow-hidden my-2 shadow-[inset_0_0_50px_rgba(5,5,8,0.9)]">
+            
+            <!-- SVG para Linhas Conectoras Tracejadas Ilha por Ilha -->
+            <svg id="path-svg" class="absolute inset-0 w-full h-full pointer-events-none z-0">
+                    <g id="connecting-line" fill="none" stroke-width="2" stroke-dasharray="6,8"></g>
+            </svg>
+
+            <!-- ILHA 1: SPIRIT (Canto Inferior Esquerdo) -->
+            <div class="island-wrapper spirit-node" style="left: 15%; top: 68%;" data-subdomain="spirit.mysticaloraclectf.com.br">
+                <a href="https://spirit.mysticaloraclectf.com.br" class="island-link group">
+                    <div class="island-circle spirit-glow">
+                        <!-- Icone / Logo Spirit -->
+                        <svg class="w-10 h-10 text-purple-300 transform group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M12 2a10 10 0 0 0-10 10c0 5.5 10 10 10 10s10-4.5 10-10A10 10 0 0 0 12 2z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 6v2M12 16v2M6 12H4M20 12h-2"/>
+                        </svg>
+                    </div>
+                    <!-- Meta, Dificuldade e Pontuação -->
+                    <div class="island-meta">
+                        <span class="island-title text-purple-300">ESPÍRITO</span>
+                        <div class="flex items-center space-x-1 mt-1">
+                            <span class="difficulty-badge diff-very-easy">Muito Fácil</span>
+                            <span class="xp-badge">100 XP</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ILHA 2: AIR (Superior Esquerda) -->
+            <div class="island-wrapper air-node" style="left: 32%; top: 22%;" data-subdomain="air.mysticaloraclectf.com.br">
+                <a href="https://air.mysticaloraclectf.com.br" class="island-link group">
+                    <div class="island-circle air-glow">
+                        <!-- Icone / Logo Air -->
+                        <svg class="w-10 h-10 text-cyan-300 transform group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M6 12h12M4 8h14a2 2 0 0 0 2-2 2 2 0 0 0-2-2H2M2 16h16a2 2 0 0 1 2 2 2 2 0 0 1-2 2H4"/>
+                        </svg>
+                    </div>
+                    <div class="island-meta">
+                        <span class="island-title text-cyan-300">AR</span>
+                        <div class="flex items-center space-x-1 mt-1">
+                            <span class="difficulty-badge diff-easy">Fácil</span>
+                            <span class="xp-badge">150 XP</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ILHA 3: FIRE (Centro Inferior) -->
+            <div class="island-wrapper fire-node" style="left: 50%; top: 72%;" data-subdomain="fire.mysticaloraclectf.com.br">
+                <a href="https://fire.mysticaloraclectf.com.br" class="island-link group">
+                    <div class="island-circle fire-glow">
+                        <!-- Icone / Logo Fire -->
+                        <svg class="w-10 h-10 text-amber-400 transform group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3.5z"/>
+                        </svg>
+                    </div>
+                    <div class="island-meta">
+                        <span class="island-title text-amber-300">FOGO</span>
+                        <div class="flex items-center space-x-1 mt-1">
+                            <span class="difficulty-badge diff-easy-medium">Fácil-Médio</span>
+                            <span class="xp-badge">200 XP</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ILHA 4: WATER (Superior Direita) -->
+            <div class="island-wrapper water-node" style="left: 68%; top: 38%;" data-subdomain="water.mysticaloraclectf.com.br">
+                <a href="https://water.mysticaloraclectf.com.br" class="island-link group">
+                    <div class="island-circle water-glow">
+                        <!-- Icone / Logo Water -->
+                        <svg class="w-10 h-10 text-blue-400 transform group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                        </svg>
+                    </div>
+                    <div class="island-meta">
+                        <span class="island-title text-blue-300">ÁGUA</span>
+                        <div class="flex items-center space-x-1 mt-1">
+                            <span class="difficulty-badge diff-medium">Médio-Difícil</span>
+                            <span class="xp-badge">300 XP</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ILHA 5: EARTH (Extremo Direito Inferior) -->
+            <div class="island-wrapper earth-node" style="left: 85%; top: 58%;" data-subdomain="earth.mysticaloraclectf.com.br">
+                <a href="https://earth.mysticaloraclectf.com.br" class="island-link group">
+                    <div class="island-circle earth-glow">
+                        <!-- Icone / Logo Earth -->
+                        <svg class="w-10 h-10 text-emerald-400 transform group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+                            <polyline points="2 17 12 22 22 17"/>
+                            <polyline points="2 12 12 17 22 12"/>
+                        </svg>
+                    </div>
+                    <div class="island-meta">
+                        <span class="island-title text-emerald-300">TERRA</span>
+                        <div class="flex items-center space-x-1 mt-1">
+                            <span class="difficulty-badge diff-medium">Médio</span>
+                            <span class="xp-badge">250 XP</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- ILHA 6: LUZ & TREVAS (Extremo Direito Superior) -->
+            <div class="island-wrapper light-dark-node" style="left: 86%; top: 18%;" data-subdomain="light-dark.mysticaloraclectf.com.br">
+                <a href="https://light-dark.mysticaloraclectf.com.br" class="island-link group">
+                    <div class="island-circle light-dark-glow">
+                        <!-- Icone / Logo Luz & Trevas (yin-yang em traço, no mesmo modelo dos demais) -->
+                        <svg class="w-10 h-10 text-slate-200 transform group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 2a5 5 0 0 0 0 10 5 5 0 0 1 0 10"/>
+                            <circle cx="12" cy="7" r="1.3" fill="currentColor" stroke="none"/>
+                            <circle cx="12" cy="17" r="1.3" fill="currentColor" stroke="none"/>
+                        </svg>
+                    </div>
+                    <div class="island-meta">
+                        <span class="island-title light-dark-title">LUZ &amp; TREVAS</span>
+                        <div class="flex items-center space-x-1 mt-1">
+                            <span class="difficulty-badge diff-medium">Médio</span>
+                            <span class="xp-badge">350 XP</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Rodapé Minimalista -->
+    <footer class="relative z-10 py-5 border-t border-purple-900/20 text-center text-xs font-mono text-purple-500/50">
+        MYSTICAL ORACLE CTF FRAMEWORK • 6 DESAFIOS ELEMENTAIS
+    </footer>
+
+    <!-- JS Principal -->
+    <script src="oracle_chall_landing.js?v=session-return-1"></script>
+</body>
+</html>

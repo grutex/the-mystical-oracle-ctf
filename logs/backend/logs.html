@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Logs do Sistema · Oráculo Abissal</title>
+    <link rel="stylesheet" href="/accounts/accounts.css?v=compact-email-2">
+    <link rel="stylesheet" href="/logs/logs.css?v=compact-panel-2">
+</head>
+<body>
+    <header><a href="/oracle">← ORÁCULO</a> <a id="accounts-link" href="/accounts">CONTAS</a></header>
+    <main>
+        <section class="panel">
+            <p class="eyebrow">ADMINISTRAÇÃO DO CTF · REGISTROS DO OLHO</p>
+            <h1>Logs do Sistema</h1>
+            <nav class="tabs" aria-label="Categorias de logs">
+                <button type="button" data-view="flags" aria-pressed="true">SUBMISSÕES DE FLAGS</button>
+                <button type="button" data-view="accounts" aria-pressed="false">CONTAS E LOGS</button>
+                <button type="button" data-view="warnings" aria-pressed="false">WARNINGS</button>
+            </nav>
+            <p id="logs-status" role="status" aria-live="polite">Carregando registros...</p>
+            <section id="flags-view" aria-label="Submissões de flags">
+                <p>Histórico de tentativas, incluindo contas de teste. Verde indica sucesso; vermelho indica falha.</p>
+                <div id="flags-list" class="log-list"></div>
+                <button id="flags-more" type="button" hidden>CARREGAR REGISTROS ANTERIORES</button>
+            </section>
+            <section id="accounts-view" hidden aria-label="Contas e seus registros">
+                <label class="search-label">Buscar conta <input id="account-search" type="search" placeholder="Username, nome ou e-mail" maxlength="254"></label>
+                <div class="table-wrapper"><table>
+                    <thead><tr><th>Conta / Nome</th><th>E-mail</th><th>Permissão / Estado</th><th>Criada / Último login</th><th>XP / Flags</th><th>Logs</th></tr></thead>
+                    <tbody id="log-accounts"></tbody>
+                </table></div>
+            </section>
+            <section id="warnings-view" hidden aria-label="Warnings">
+                <p>Sinais para revisão: bloqueio de login por 30 minutos após 3 senhas incorretas, acesso administrativo sem permissão, login de conta banida, 5 falhas de login em 5 minutos ou 10 flags incorretas em 60 segundos. Um alerta não causa banimento automático.</p>
+                <div class="table-wrapper"><table>
+                    <thead><tr><th>Data</th><th>Conta</th><th>E-mail</th><th>IP de acesso</th><th>Motivo</th></tr></thead>
+                    <tbody id="warnings-list"></tbody>
+                </table></div>
+                <button id="warnings-more" type="button" hidden>CARREGAR REGISTROS ANTERIORES</button>
+            </section>
+        </section>
+    </main>
+    <dialog id="account-logs-modal" aria-labelledby="account-logs-title">
+        <div class="modal-heading"><div><p class="eyebrow">REGISTROS DO BUSCADOR</p><h2 id="account-logs-title"></h2><p id="account-logs-email"></p></div><button id="close-account-logs" type="button" aria-label="Fechar logs da conta">✕</button></div>
+        <div id="account-logs-list" class="log-list"></div>
+        <button id="account-more" type="button" hidden>CARREGAR REGISTROS ANTERIORES</button>
+    </dialog>
+    <script src="/oracle-runtime.js"></script>
+    <script src="/portal-api.js"></script>
+    <script>Portal.request('me').then(({profile})=>{if(profile.role==='logs')document.getElementById('accounts-link').hidden=true;});</script>
+    <script src="/logs/logs.js"></script>
+</body>
+</html>

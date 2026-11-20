@@ -1,0 +1,206 @@
+/* ==========================================================================
+   A FORJA — Desafio 03 · fire  (login + sessões + cofre)  ·  tema âmbar
+   ========================================================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg-dark: #0a0603;
+    --fire: #f59e0b;
+    --fire-light: #fcd34d;
+    --fire-deep: #b45309;
+    --fire-glow: rgba(245, 158, 11, 0.45);
+    --gold: #d4af37;
+    --gold-light: #fef08a;
+    --green: #34d399;
+    --crimson: #f87171;
+    --glass-bg: rgba(20, 12, 6, 0.82);
+    --glass-border: rgba(245, 158, 11, 0.28);
+    --text: #f7ecd9;
+    --text-dim: #c2a884;
+    --font-serif: 'Cinzel', serif;
+    --font-title: 'Cinzel Decorative', cursive;
+    --font-body: 'Cormorant Garamond', serif;
+    --font-mono: 'Courier New', monospace;
+    --forge-haze-speed: 9s;
+    --forge-stars-speed: 8s;
+    --forge-brightness: 1;
+    --forge-swell: 1.03;
+    --forge-stars-dim: .2;
+    --forge-stars-bright: .42;
+}
+
+body {
+    background-color: var(--bg-dark); color: var(--text); font-family: var(--font-body);
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    overflow-x: hidden; position: relative; padding: 40px 16px;
+}
+.fire-haze {
+    position: fixed; inset: 0; z-index: 0;
+    background:
+        radial-gradient(60% 55% at 50% 78%, rgba(180,83,9,.34) 0%, transparent 66%),
+        radial-gradient(45% 40% at 20% 30%, rgba(245,158,11,.16) 0%, transparent 70%),
+        radial-gradient(45% 40% at 82% 24%, rgba(252,211,77,.10) 0%, transparent 72%);
+    filter: blur(30px) brightness(var(--forge-brightness)); animation: hazeFlicker var(--forge-haze-speed) ease-in-out infinite alternate; pointer-events: none;
+    transition: filter .4s ease;
+}
+@keyframes hazeFlicker { 0%{opacity:.8;transform:scale(1)} 50%{opacity:1;transform:scale(var(--forge-swell))} 100%{opacity:.85} }
+.stars-bg {
+    position: fixed; inset: 0; z-index: 1;
+    background-image:
+        radial-gradient(1.5px 1.5px at 20px 30px,#fff,rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px,rgba(252,211,77,.85),rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 40px,var(--fire),rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 160px 120px,#fff,rgba(0,0,0,0));
+    background-repeat: repeat; background-size: 200px 200px; opacity:.28; pointer-events: none;
+    animation: starsPulse var(--forge-stars-speed) infinite alternate ease-in-out;
+}
+@keyframes starsPulse { 0%{opacity:var(--forge-stars-dim)} 100%{opacity:var(--forge-stars-bright)} }
+
+.forja-wrapper { position: relative; z-index: 10; width: 100%; max-width: 680px; }
+.forja-card {
+    background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border); border-radius: 24px; padding: 42px 36px 28px;
+    box-shadow: 0 25px 60px rgba(0,0,0,.88), inset 0 0 28px rgba(245,158,11,.08), 0 0 38px rgba(245,158,11,.14);
+}
+.forja-header { text-align: center; margin-bottom: 14px; }
+.forja-eyebrow { display:inline-block; font-family:var(--font-serif); font-size:.72rem; letter-spacing:5px; text-transform:uppercase; color:var(--gold); opacity:.85; margin-bottom:12px; }
+.forja-title {
+    font-family:var(--font-title); font-size:clamp(1.7rem,5vw,2.4rem); font-weight:700; letter-spacing:2px;
+    background:linear-gradient(180deg,var(--fire-light),var(--fire) 55%,var(--fire-deep));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow:0 0 30px var(--fire-glow); margin-bottom:6px;
+}
+.forja-subtitle { font-family:var(--font-serif); font-size:.82rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-dim); }
+.gate-divider { text-align:center; color:var(--gold); letter-spacing:4px; opacity:.7; margin:16px 0 22px; font-size:.95rem; }
+
+/* abas login/cadastro */
+.tabs { display:flex; gap:8px; justify-content:center; max-width:420px; margin:0 auto 14px; }
+.tab-btn {
+    flex:1; padding:10px; cursor:pointer; font-family:var(--font-serif); font-size:.75rem; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--text-dim); background:rgba(10,6,3,.5); border:1px solid rgba(245,158,11,.22); border-radius:10px;
+    transition:all .2s ease;
+}
+.tab-btn.active { color:var(--fire-light); border-color:var(--fire); background:rgba(245,158,11,.1); box-shadow:0 0 16px rgba(245,158,11,.2); }
+
+/* inputs / botões */
+.forja-form { max-width:420px; margin:0 auto; }
+.linked-account { margin:10px 0 14px; padding:10px 12px; border:1px solid rgba(245,158,11,.24); border-radius:10px; background:rgba(10,6,3,.45); color:var(--text-dim); text-align:center; }
+.linked-account strong { color:var(--gold-light); font-family:var(--font-mono); user-select:all; }
+.seal-help { margin:-4px 0 14px; color:var(--text-dim); text-align:center; font-size:.92rem; line-height:1.4; }
+.forja-label { display:block; font-family:var(--font-serif); font-size:.72rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin:10px 0 6px; }
+.forja-input {
+    width:100%; background:rgba(10,6,3,.6); border:1px solid rgba(245,158,11,.3); border-radius:12px;
+    padding:12px 15px; color:var(--text); font-family:var(--font-mono); font-size:.98rem;
+    transition:border-color .25s ease, box-shadow .25s ease;
+}
+.forja-input::placeholder { color:rgba(194,168,132,.5); }
+.forja-input:focus { outline:none; border-color:var(--fire); box-shadow:0 0 18px rgba(245,158,11,.3); }
+.forja-btn {
+    padding:12px 22px; font-family:var(--font-serif); font-size:.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase;
+    color:#fff7e8; cursor:pointer; border:1px solid rgba(245,158,11,.5); border-radius:12px;
+    background:linear-gradient(135deg, rgba(180,83,9,.55), rgba(245,158,11,.35)); box-shadow:inset 0 0 14px rgba(245,158,11,.15);
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; white-space:nowrap;
+}
+.forja-btn:hover:not(:disabled) { transform:translateY(-2px); border-color:var(--fire-light); box-shadow:0 0 26px rgba(245,158,11,.45); }
+.forja-btn:disabled { opacity:.45; cursor:not-allowed; }
+.forja-btn.full { width:100%; margin-top:14px; }
+.forja-btn.ghost { background:rgba(245,158,11,.08); border-color:rgba(245,158,11,.3); color:var(--fire-light); margin-top:14px; }
+.forja-msg { min-height:18px; margin-top:10px; text-align:center; font-family:var(--font-serif); font-size:.85rem; }
+.forja-msg.err { color:var(--crimson); } .forja-msg.ok { color:var(--green); }
+code { font-family:var(--font-mono); background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.25); border-radius:6px; padding:1px 7px; color:var(--fire-light); font-size:.9em; }
+
+/* painéis */
+.panel { margin-bottom:16px; padding:18px; border:1px solid rgba(245,158,11,.2); border-radius:16px; background:rgba(245,158,11,.04); }
+.panel.sealed { opacity:.75; border-style:dashed; }
+.panel-head { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.panel-title { font-family:var(--font-serif); font-size:.92rem; letter-spacing:1px; color:var(--fire-light); }
+.panel-path { font-family:var(--font-mono); font-size:.78rem; color:var(--text-dim); }
+.sealed-tag { font-family:var(--font-serif); font-size:.7rem; letter-spacing:1px; text-transform:uppercase; color:var(--crimson); border:1px dashed var(--crimson); border-radius:6px; padding:2px 8px; }
+.panel-desc { font-size:1.02rem; color:var(--text-dim); margin-bottom:10px; }
+
+.token-box { font-family:var(--font-mono); font-size:.82rem; color:var(--gold-light); background:rgba(10,6,3,.6); border:1px solid rgba(245,158,11,.25); border-radius:10px; padding:10px 12px; word-break:break-all; user-select:all; }
+
+/* diretório de sessões */
+.sessions { display:flex; flex-direction:column; gap:6px; }
+.sess-row { display:flex; align-items:center; gap:10px; padding:8px 12px; background:rgba(10,6,3,.5); border:1px solid rgba(245,158,11,.14); border-radius:10px; }
+.sess-row.me { border-color:rgba(245,158,11,.45); }
+.sess-ic { font-size:.95rem; }
+.sess-name { flex:1; font-family:var(--font-mono); font-size:.78rem; color:var(--text); word-break:break-all; }
+.sess-size { font-family:var(--font-mono); font-size:.8rem; color:var(--text-dim); white-space:nowrap; }
+.sess-tag { font-family:var(--font-serif); font-size:.62rem; letter-spacing:1px; text-transform:uppercase; color:var(--fire-light); }
+
+/* cofre / travas */
+.vault-state { font-family:var(--font-mono); font-size:.8rem; color:var(--fire-light); }
+.locks { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; margin:14px 0; }
+.lock { text-align:center; padding:14px 8px; border:1px solid rgba(245,158,11,.25); border-radius:14px; background:rgba(10,6,3,.5); transition:border-color .1s ease, box-shadow .1s ease, background .1s ease; }
+.lock .flame { font-size:1.8rem; filter:grayscale(1) brightness(.6); opacity:.62; transform:scale(.92); transition:filter .1s linear, opacity .1s linear, transform .1s linear; }
+.lock.on { border-color:var(--fire); box-shadow:0 0 22px rgba(245,158,11,.4); background:rgba(245,158,11,.1); }
+.lock.on .flame { filter:none; opacity:1; animation:flameFlicker .18s ease-in-out infinite; }
+@keyframes flameFlicker { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-2px) scale(1.08)} }
+.lock-n { display:block; margin-top:6px; font-family:var(--font-serif); font-size:.66rem; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); }
+.lock-btn { margin-top:8px; width:100%; padding:8px; font-size:.68rem; }
+
+.vault-out { margin-top:12px; }
+.flag-box { display:inline-block; margin-top:6px; padding:12px 20px; font-family:var(--font-mono); font-size:1.05rem; letter-spacing:1px; color:var(--gold-light); background:rgba(52,211,153,.1); border:1px solid rgba(52,211,153,.45); border-radius:12px; box-shadow:0 0 26px rgba(52,211,153,.22); user-select:all; }
+.vault-fail { color:var(--text-dim); font-style:italic; }
+
+.flag-cta { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-top:16px; }
+.cta-btn { display:inline-flex; align-items:center; gap:9px; padding:12px 20px; text-decoration:none; cursor:pointer; font-family:var(--font-serif); font-size:.8rem; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; border-radius:12px; transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+.cta-primary { color:#04241a; background:linear-gradient(135deg,var(--green),#6ee7b7); border:1px solid rgba(52,211,153,.6); box-shadow:0 0 22px rgba(52,211,153,.35); }
+.cta-primary:hover { transform:translateY(-2px); box-shadow:0 0 34px rgba(52,211,153,.55); }
+.cta-ghost { color:var(--fire-light); background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.45); }
+.cta-ghost:hover { transform:translateY(-2px); border-color:var(--fire-light); box-shadow:0 0 24px rgba(245,158,11,.4); }
+
+.forja-footer { margin-top:24px; padding-top:16px; border-top:1px solid rgba(245,158,11,.14); text-align:center; }
+.footer-mark { font-family:var(--font-serif); font-size:.64rem; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); opacity:.7; }
+
+/* travessia */
+.travessia { display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-bottom:22px; }
+.trav-btn { display:inline-flex; align-items:center; gap:10px; padding:9px 18px; text-decoration:none; font-family:var(--font-serif); color:var(--text-dim); background:rgba(20,12,6,.7); border:1px solid rgba(245,158,11,.22); border-radius:999px; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); transition:transform .25s ease, border-color .25s ease, color .25s ease, box-shadow .25s ease; }
+.trav-btn:hover { transform:translateY(-2px); color:var(--fire-light); border-color:var(--fire); box-shadow:0 0 22px rgba(245,158,11,.28); }
+.trav-glyph { font-size:1.15rem; color:var(--gold-light); line-height:1; }
+.trav-label { display:flex; flex-direction:column; line-height:1.15; font-size:.82rem; letter-spacing:1px; text-transform:uppercase; }
+.trav-label small { font-size:.6rem; letter-spacing:1px; text-transform:uppercase; opacity:.65; }
+
+@media (max-width:560px) {
+    .forja-card { padding:30px 20px 22px; }
+    .locks { grid-template-columns:repeat(2,1fr); }
+    .cta-btn { width:100%; justify-content:center; }
+}
+
+/* apresentar selo de sessão (troca de cookie confiável) */
+.assume-row { display:flex; gap:10px; margin-top:10px; }
+.assume-row .forja-input { flex:1; }
+.assume-row select { min-width:0; }
+.assume-row option { background:#1b1008; color:var(--text); }
+.assume-row option:disabled { color:var(--text-dim); }
+.directory-help { margin-top:10px; color:var(--text-dim); font-size:.92rem; line-height:1.45; }
+.forge-power { margin:16px 0; padding:14px; border:1px solid rgba(245,158,11,.24); border-radius:12px; background:rgba(10,6,3,.45); }
+.power-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--fire-light); font:600 .75rem/1.5 var(--font-serif); }
+.power-heading output { color:var(--gold-light); font: .85rem var(--font-mono); }
+.forge-power input { display:block; width:100%; margin:16px 0 10px; accent-color:var(--fire); cursor:pointer; }
+.forge-power input:focus-visible { outline:2px solid var(--gold-light); outline-offset:5px; border-radius:8px; }
+.power-scale { display:flex; justify-content:space-between; gap:10px; color:var(--text-dim); font-size:.8rem; }
+.forge-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:16px 0; }
+.forge-metrics > div { padding:12px 10px; border:1px solid rgba(245,158,11,.16); border-radius:10px; background:rgba(10,6,3,.45); }
+.forge-metrics span, .forge-metrics small { display:block; color:var(--text-dim); font-size:.85rem; }
+.forge-metrics strong { display:block; margin:8px 0 4px; color:var(--gold-light); font:600 1.12rem var(--font-serif); }
+.forge-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.forge-controls .forja-btn { padding:10px 8px; font-size:.68rem; letter-spacing:.5px; white-space:normal; }
+.forge-controls [aria-pressed="true"] { border-color:var(--gold-light); background:rgba(245,158,11,.22); }
+.forge-journal { margin-top:18px; padding-top:14px; border-top:1px solid rgba(245,158,11,.16); }
+.forge-journal h2 { color:var(--fire-light); font:600 .75rem var(--font-serif); letter-spacing:1px; margin-bottom:10px; }
+.forge-journal ol { list-style:none; display:grid; gap:6px; }
+.forge-journal li { color:var(--text-dim); font: .75rem/1.5 var(--font-mono); overflow-wrap:anywhere; }
+.workshop-state { color:var(--text-dim); font: .72rem var(--font-serif); }
+.workshop-actions { margin-top:14px; }
+.workshop-result { margin-top:18px; padding-top:16px; border-top:1px solid rgba(245,158,11,.2); }
+.workshop-result pre { margin:12px 0; padding:12px; background:rgba(10,6,3,.6); border-radius:10px; color:var(--text-dim); font: .75rem/1.7 var(--font-mono); white-space:pre-wrap; overflow-wrap:anywhere; }
+@media print {
+    body { display:block; background:white; color:black; padding:0; }
+    body > :not(#workshop-print-sheet) { display:none !important; }
+    #workshop-print-sheet { display:block !important; }
+    #workshop-print-sheet pre { font:12pt/1.6 monospace; white-space:pre-wrap; overflow-wrap:anywhere; }
+}
+@media (max-width:400px) { .forge-metrics { grid-template-columns:1fr; } }
+@media (max-width:560px){ .assume-row { flex-direction:column; } }

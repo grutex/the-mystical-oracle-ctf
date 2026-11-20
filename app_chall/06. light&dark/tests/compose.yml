@@ -1,0 +1,85 @@
+name: oracle-light-tests
+
+x-secret: &secret
+  ACCOUNT_SECRET: test-only-aurora-secret-0000000000000000
+
+services:
+  portal-db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: MYSTICAL_ORACLE_LOGIN_DB
+      MARIADB_USER: oracle
+      MARIADB_PASSWORD: test-only-db-password
+      MARIADB_ROOT_PASSWORD: test-only-root-password
+    tmpfs:
+      - /var/lib/mysql
+    volumes:
+      - ../../../app_login/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ../../../app_login/db/migrations/010_system_logs.sql:/docker-entrypoint-initdb.d/02-logs.sql:ro
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 2s
+      timeout: 5s
+      retries: 40
+
+  portal-web:
+    image: mystical-oracle-portal-web
+    environment:
+      <<: *secret
+      ACCESS_MODE: 0
+      DB_HOST: portal-db
+      DB_NAME: MYSTICAL_ORACLE_LOGIN_DB
+      DB_USER: oracle
+      DB_PASS: test-only-db-password
+      SESSION_PATH: /var/www/sessions
+      COOKIE_SECURE: 0
+      LIGHT_TEST_DISPOSABLE: 1
+    volumes:
+      - test-sessions:/var/www/sessions
+      - ./integration.php:/tmp/light-integration.php:ro
+    depends_on:
+      portal-db:
+        condition: service_healthy
+
+  light-dark-web:
+    image: mystical-oracle-light-dark-web
+    environment:
+      <<: *secret
+      ACCESS_MODE: 0
+      CHALLENGE_KEY: light_dark
+      APP_INDEX: oracle-light-dark
+      PORTAL_SESSION_PATH: /var/www/portal-sessions
+      COOKIE_SECURE: 0
+      LIGHT_TEST_DISPOSABLE: 1
+    volumes:
+      - test-sessions:/var/www/portal-sessions:ro
+      - ./internal.php:/tmp/light-internal.php:ro
+    networks:
+      - default
+      - light-tower
+    depends_on:
+      - portal-web
+      - light-tower
+
+  light-tower:
+    image: mystical-oracle-light-tower
+    environment:
+      <<: *secret
+    networks:
+      - light-tower
+
+  gateway:
+    image: nginx:1.27-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - light-dark-web
+
+networks:
+  default:
+    internal: true
+  light-tower:
+    internal: true
+
+volumes:
+  test-sessions:
