@@ -57,7 +57,7 @@ Seis elementos. Uma travessia de segurança web.
 
 Desafios com ambientação fantástica, flags individuais e um portal para administrar o evento. O jogador percorre os portões, investiga suas mecânicas e apresenta as flags no Oráculo.
 
-## Novidades desta branch em relação à `main`
+## Novidades
 
 - **JavaScript ofuscado no build:** o portal, o mapa, os desafios e o bot da Água recebem ofuscação durante a construção das imagens Docker. As pistas que fazem parte da exploração continuam disponíveis no navegador.
 - **Leaderboards separadas:** jogadores e contas de teste veem suas próprias classificações. O administrador pode alternar entre elas, e jogadores empatados dividem a colocação.
