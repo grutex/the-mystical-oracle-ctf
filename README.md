@@ -376,25 +376,6 @@ docker compose up --build -d
 docker compose ps
 ```
 
-### DNS e Caddy
-
-No Cloudflare, crie registros `A` para o domínio principal e para cada host usado pelo portal, mapa e desafios, apontando todos ao Elastic IP. O Cloudflare foi usado nessa publicação para DNS e proxy do domínio. O aplicativo não depende de um túnel `cloudflared` quando a EC2 recebe o tráfego diretamente pelo IP elástico.
-
-Instale Caddy no Ubuntu usando o [repositório oficial para Debian e Ubuntu](https://caddyserver.com/docs/install). Crie `/etc/caddy/Caddyfile` com o domínio principal e todos os hosts configurados no `.env`:
-
-```caddyfile
-mysticaloraclectf.com.br, mapa.mysticaloraclectf.com.br, spirit.mysticaloraclectf.com.br, air.mysticaloraclectf.com.br, fire.mysticaloraclectf.com.br, water.mysticaloraclectf.com.br, depth-water.mysticaloraclectf.com.br, earth.mysticaloraclectf.com.br, light-dark.mysticaloraclectf.com.br {
-    reverse_proxy 127.0.0.1:8080
-}
-```
-
-Troque os exemplos pelos hosts configurados no `.env`. Caddy encaminha cada domínio ao gateway Nginx na porta local `8080`; deixe o cabeçalho `Host` original para o gateway selecionar o serviço correto. O Caddy pode obter e renovar certificados TLS automaticamente quando os hosts estão acessíveis nas portas `80` e `443`; veja a [documentação de HTTPS automático](https://caddyserver.com/docs/automatic-https).
-
-Consulte [desempenho e validação](docs/PERFORMANCE.md) para ajustar a concorrência do bot e repetir os testes isolados com 120 sessões. O modo `2` combina hosts locais e públicos na mesma instalação, compartilhando contas e progresso. Para o portal, consulte [app_login](app_login/README.md); para o mapa, [Mapa dos Elementos](app_chall/00.%20landing/README.md).
-
-As falhas dos portões são intencionais e pertencem ao laboratório. Os detalhes recolhíveis nos READMEs contêm spoilers; no GitHub, qualquer pessoa com acesso ao repositório pode lê-los.
-
----
 
 <br>
 
